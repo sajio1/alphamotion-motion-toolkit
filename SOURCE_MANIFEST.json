@@ -1,0 +1,506 @@
+{
+  "schema": "alphamotion.source-package.v1",
+  "file_count": 79,
+  "source_modules": [
+    "__init__",
+    "_bvh",
+    "_smpl_bind",
+    "adapters",
+    "card_gallery",
+    "compact",
+    "contact_labels",
+    "corpus_screen",
+    "corpus_support",
+    "dataset_metadata",
+    "evaluation",
+    "fixed_support",
+    "kimodo_foot_skate",
+    "locomotion_audit",
+    "motion",
+    "physics_audit",
+    "pipeline",
+    "preview_candidates",
+    "render_review",
+    "reports",
+    "review_sampling",
+    "review_sources",
+    "sampling_statistics",
+    "source_batch",
+    "source_package",
+    "support_sweep",
+    "surface_audit",
+    "surface_contacts"
+  ],
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 238,
+      "sha256": "027c5aaf860cbf7ce086bc246c01d49e54ccdb28f66b9e310b290d5c5c085411"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1226,
+      "sha256": "6a3505eae211142d46b90e62871cff5114f7e97eb8857cea53fae83cb415a212"
+    },
+    {
+      "path": "NOTICE.md",
+      "bytes": 407,
+      "sha256": "2b4a73b00b5e229dbd39ceeccb2bdc7a578bf989abf57d2a92c0312df2a332bc"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3605,
+      "sha256": "d5fadbda34914e23f44f03b7f470de1481218e6f4f92dde1cacc604328a828c5"
+    },
+    {
+      "path": "SDK.md",
+      "bytes": 581,
+      "sha256": "a2a9dd8fe02467569950a01cc615bb603750938f6167f514511d1d78e4c9486b"
+    },
+    {
+      "path": "docs/api.md",
+      "bytes": 1416,
+      "sha256": "dcfbdab1e250dce83c693638d129c5255ff2056a60b83f4365d73ebddb6c8c5b"
+    },
+    {
+      "path": "docs/architecture.md",
+      "bytes": 1309,
+      "sha256": "0c4879d57b1d1b17ab41da15c04ad65fb3d18b85f0d4886af7a1cea28541f5b9"
+    },
+    {
+      "path": "docs/batch.md",
+      "bytes": 1007,
+      "sha256": "78ac89926ebbbdf4de1be1fc28c8b579bef7ac86ffe448691573e46a32c964b6"
+    },
+    {
+      "path": "docs/evaluation.md",
+      "bytes": 1822,
+      "sha256": "cdb884b45bd6ceb5dc4dbf769f944bc9c1a5dc5277de3e5783e0090814a2191e"
+    },
+    {
+      "path": "docs/formats.md",
+      "bytes": 3000,
+      "sha256": "a493e6b907deeb631212eb8b26281c487a720f22adcc0cfab5db618f46f8a0b4"
+    },
+    {
+      "path": "docs/review.md",
+      "bytes": 694,
+      "sha256": "2cd72a66d5a60d6573120153873575650c34f9d380296c150811b1483f4a28b2"
+    },
+    {
+      "path": "docs/robots.md",
+      "bytes": 1203,
+      "sha256": "cdb3f914b1382b813a9df3c1b38a341c8f98a811fdca8ffe6782868e735bd1e2"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 526,
+      "sha256": "989d57dee639e06a3671494bb2d642f122a01463de6339b46366bdfd1273d8c5"
+    },
+    {
+      "path": "runtime/README.md",
+      "bytes": 170,
+      "sha256": "b7abb4052843e9025ad72f305dcdaf906811103a86d17d7bfd3788c4b3226d43"
+    },
+    {
+      "path": "runtime/scripts/render_hiw500_transfer_showcase.py",
+      "bytes": 2409,
+      "sha256": "39b3c7365d0a6ea50ab7be45bf897051984cd528e107b667c753b6a6624fa685",
+      "source_sha256": "afbcf3e7d02166c453046fbb3f759cfb6ba5131ff9db2569b2e2cde352d79b12"
+    },
+    {
+      "path": "runtime/scripts/render_single_embodiment_humi_demo.py",
+      "bytes": 1614,
+      "sha256": "ab460fae169e5d9fc4740aab83fe4be3d6ac99aab7aff66fd8e141da7991732f",
+      "source_sha256": "dff2dd8893d3899699bb62d0d686ba8fec4e034a5f1d73121693a22c7fcf3538"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/__init__.py",
+      "bytes": 444,
+      "sha256": "e823ef3a15779c8c7ea148d25ce6bdf0e88ed4dd8b6019e037e43b6393026603",
+      "source_sha256": "e823ef3a15779c8c7ea148d25ce6bdf0e88ed4dd8b6019e037e43b6393026603"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/_bvh.py",
+      "bytes": 2958,
+      "sha256": "06034fc8e5470f0a0d2354f83f76a66e961e3ecbbf9211d120fd9a44c1809c30",
+      "source_sha256": "06034fc8e5470f0a0d2354f83f76a66e961e3ecbbf9211d120fd9a44c1809c30"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/_smpl_bind.py",
+      "bytes": 2970,
+      "sha256": "37f1234230059460a2f36c199def725cc7104517f84216f44f0c1eab1731e57f",
+      "source_sha256": "37f1234230059460a2f36c199def725cc7104517f84216f44f0c1eab1731e57f"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/adapters.py",
+      "bytes": 4741,
+      "sha256": "d69c26597e4717b03bbdd2df5e593c94d8f8bb7b3134c9c1b9ed1df067c81091",
+      "source_sha256": "d69c26597e4717b03bbdd2df5e593c94d8f8bb7b3134c9c1b9ed1df067c81091"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/card_gallery.py",
+      "bytes": 26235,
+      "sha256": "a08e0a86dae934e45aa0700b1afda1d7cc061a8c49c1a87dc441d64a8ab38137",
+      "source_sha256": "a08e0a86dae934e45aa0700b1afda1d7cc061a8c49c1a87dc441d64a8ab38137"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/compact.py",
+      "bytes": 5839,
+      "sha256": "929186a6f94a89ecbe2e22f72c9baff43141404d38c73854d56761ec6e10c5bb",
+      "source_sha256": "929186a6f94a89ecbe2e22f72c9baff43141404d38c73854d56761ec6e10c5bb"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/contact_labels.py",
+      "bytes": 2030,
+      "sha256": "59e80263c3f153864637b99619a3a2ad344efee64771c50e526282687797c08f",
+      "source_sha256": "59e80263c3f153864637b99619a3a2ad344efee64771c50e526282687797c08f"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/corpus_screen.py",
+      "bytes": 13009,
+      "sha256": "41a3c3d8e038b47596723f34ffb71a80abacdb1e3009b77b7baff854a381a35a",
+      "source_sha256": "41a3c3d8e038b47596723f34ffb71a80abacdb1e3009b77b7baff854a381a35a"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/corpus_support.py",
+      "bytes": 13682,
+      "sha256": "889678fb3ab0fec52342b520a56b6bb623da206f86d310f2b0b8bb6a7d9e51b3",
+      "source_sha256": "889678fb3ab0fec52342b520a56b6bb623da206f86d310f2b0b8bb6a7d9e51b3"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/dataset_metadata.py",
+      "bytes": 15444,
+      "sha256": "1252e2933d5274eea6120a8f562156b44eff964d4713da878da7f686786deb6e",
+      "source_sha256": "1252e2933d5274eea6120a8f562156b44eff964d4713da878da7f686786deb6e"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/evaluation.py",
+      "bytes": 2235,
+      "sha256": "8f5863ca5eaab971f0c5f58021f877e63c208061b9b296bcb545fea51d042649",
+      "source_sha256": "8f5863ca5eaab971f0c5f58021f877e63c208061b9b296bcb545fea51d042649"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/fixed_support.py",
+      "bytes": 5335,
+      "sha256": "62927b03105d9bf59230cf5d2363423784ab538f35c0a21d98628f5b1e754336",
+      "source_sha256": "62927b03105d9bf59230cf5d2363423784ab538f35c0a21d98628f5b1e754336"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/kimodo_foot_skate.py",
+      "bytes": 1337,
+      "sha256": "c37d43126fac37f815c329ce51d913dc7c4a285503712bccf06a0da370d68e38",
+      "source_sha256": "c37d43126fac37f815c329ce51d913dc7c4a285503712bccf06a0da370d68e38"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/locomotion_audit.py",
+      "bytes": 20263,
+      "sha256": "6f48b3fe187fe78df86f1e1487eedb5cc9a576b70e38611d882723ee96f643cd",
+      "source_sha256": "6f48b3fe187fe78df86f1e1487eedb5cc9a576b70e38611d882723ee96f643cd"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/motion.py",
+      "bytes": 3741,
+      "sha256": "ccb84a297948fed49395ae3e579691709b8e8edb4c82bc93b6aeb97a60c7831b",
+      "source_sha256": "ccb84a297948fed49395ae3e579691709b8e8edb4c82bc93b6aeb97a60c7831b"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/physics_audit.py",
+      "bytes": 18306,
+      "sha256": "3ddc832178336a5de32ef7feeecca6ac84a8beaf2c62008ace7f47a9de70f450",
+      "source_sha256": "3ddc832178336a5de32ef7feeecca6ac84a8beaf2c62008ace7f47a9de70f450"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/pipeline.py",
+      "bytes": 4179,
+      "sha256": "56d4208b76751eb0be9afc7adec9f0e8aeaa216971b04f966a93cfb8e5df51e7",
+      "source_sha256": "56d4208b76751eb0be9afc7adec9f0e8aeaa216971b04f966a93cfb8e5df51e7"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/preview_candidates.py",
+      "bytes": 4552,
+      "sha256": "98ace15fdaea334750aa09cd550bdf514e1d208f0bd5b7f77d37739798c86cff",
+      "source_sha256": "98ace15fdaea334750aa09cd550bdf514e1d208f0bd5b7f77d37739798c86cff"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/render_review.py",
+      "bytes": 16789,
+      "sha256": "f6b999ae782866cb75e58a67f2ca9aed605647ff1e9ed538e17ed909696f751c",
+      "source_sha256": "f6b999ae782866cb75e58a67f2ca9aed605647ff1e9ed538e17ed909696f751c"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/reports.py",
+      "bytes": 3886,
+      "sha256": "e41a7cf1b998014dfad7e778e65edb58ef2eb8430b8f72fad3ff9274591e7ba4",
+      "source_sha256": "e41a7cf1b998014dfad7e778e65edb58ef2eb8430b8f72fad3ff9274591e7ba4"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/review_sampling.py",
+      "bytes": 6201,
+      "sha256": "7d860b36956e305f42c68902ea98efb6bba2f993c3e1541638706c1569563f88",
+      "source_sha256": "7d860b36956e305f42c68902ea98efb6bba2f993c3e1541638706c1569563f88"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/review_sources.py",
+      "bytes": 5159,
+      "sha256": "ccdb1e283aa710bf8161b91ea2c78c7b9e46723a1ad935dd5f45d5b02e7c96c9",
+      "source_sha256": "ccdb1e283aa710bf8161b91ea2c78c7b9e46723a1ad935dd5f45d5b02e7c96c9"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/sampling_statistics.py",
+      "bytes": 4705,
+      "sha256": "f105d48e0cb840b2c1920dcb5228930e4890f0d8563dd2b3f0da0ee54ae19bae",
+      "source_sha256": "f105d48e0cb840b2c1920dcb5228930e4890f0d8563dd2b3f0da0ee54ae19bae"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/source_batch.py",
+      "bytes": 3526,
+      "sha256": "7c98d0b2f5978ba5bd0291e3755a480712f67e655effac26121c6bfbc6124b8e",
+      "source_sha256": "7c98d0b2f5978ba5bd0291e3755a480712f67e655effac26121c6bfbc6124b8e"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/source_package.py",
+      "bytes": 29393,
+      "sha256": "b423a1c3276a5b8bfb99fef362a21730522d51b254c3d40b4730326938aed346",
+      "source_sha256": "b423a1c3276a5b8bfb99fef362a21730522d51b254c3d40b4730326938aed346"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/support_sweep.py",
+      "bytes": 7335,
+      "sha256": "ba39a4bbea59e2bef644ab457921f97904547acfa5aba4ea86726fb871f3e960",
+      "source_sha256": "ba39a4bbea59e2bef644ab457921f97904547acfa5aba4ea86726fb871f3e960"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/surface_audit.py",
+      "bytes": 13987,
+      "sha256": "5a21d2a46e7c0f9c75eaa806139c93048d9c2fd2ef1a398e43c9fb1a8d72bc9c",
+      "source_sha256": "5a21d2a46e7c0f9c75eaa806139c93048d9c2fd2ef1a398e43c9fb1a8d72bc9c"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/surface_contacts.py",
+      "bytes": 4282,
+      "sha256": "b7a58d9568c1542662137446eaa98df5e67e704cc035ef8182dafa44e1fad434",
+      "source_sha256": "b7a58d9568c1542662137446eaa98df5e67e704cc035ef8182dafa44e1fad434"
+    },
+    {
+      "path": "src/greenwich_umi_proof/__init__.py",
+      "bytes": 63,
+      "sha256": "78909c8a15513d0c1b9808c910d6f2e82cd81514f5c2716a4a6aaafd276192de"
+    },
+    {
+      "path": "src/greenwich_umi_proof/interactive_viewer.py",
+      "bytes": 9858,
+      "sha256": "6247a5704c9425f319681b73e3e7e168ce96fa829bbd09f75ca363b6038b97f1",
+      "source_sha256": "a5a5960cfb37d32bc8c57312da90cc404c49f16271c71f31461d41764e6a8afc"
+    },
+    {
+      "path": "src/greenwich_umi_proof/native_visual_fk.py",
+      "bytes": 2776,
+      "sha256": "4225cf193f8a4eb40214149aaeb820bcec4212c52a005172bcd194c01a614b45",
+      "source_sha256": "4225cf193f8a4eb40214149aaeb820bcec4212c52a005172bcd194c01a614b45"
+    },
+    {
+      "path": "src/greenwich_umi_proof/sole_geometry.py",
+      "bytes": 8048,
+      "sha256": "199a8adc92e5875d858bb69393e7f518b5ccbdee86e89eb885e1c08d29c8141f",
+      "source_sha256": "199a8adc92e5875d858bb69393e7f518b5ccbdee86e89eb885e1c08d29c8141f"
+    },
+    {
+      "path": "tests/smoke_full_body.py",
+      "bytes": 2890,
+      "sha256": "1ba4cfbc487651e59f37ea07743a5fe558d159e0f882aceabccaa1991ba67a30",
+      "source_sha256": "1ba4cfbc487651e59f37ea07743a5fe558d159e0f882aceabccaa1991ba67a30"
+    },
+    {
+      "path": "tests/test_compact_soma_bundle.py",
+      "bytes": 568,
+      "sha256": "61a8ade5e0b826e97ebbee520eb342d87daa84c1207d6e42734076001bc40f1c",
+      "source_sha256": "61a8ade5e0b826e97ebbee520eb342d87daa84c1207d6e42734076001bc40f1c"
+    },
+    {
+      "path": "tests/test_contact_labels.py",
+      "bytes": 815,
+      "sha256": "4c80311d8088c9c892f3040cfc14dd0881bd35e2b4b07914b7575d683eb85242",
+      "source_sha256": "4c80311d8088c9c892f3040cfc14dd0881bd35e2b4b07914b7575d683eb85242"
+    },
+    {
+      "path": "tests/test_locomotion_source_phase.py",
+      "bytes": 917,
+      "sha256": "ec667d6e23bb5b65d075370daa342785b2709ff99d4c3f95cdf1d3b932bf9cb6",
+      "source_sha256": "ec667d6e23bb5b65d075370daa342785b2709ff99d4c3f95cdf1d3b932bf9cb6"
+    },
+    {
+      "path": "tests/test_physics_audit.py",
+      "bytes": 2370,
+      "sha256": "8b8a8837b1ad17f05b1b1bbbeeb202f6b84fcdd0ab3fb9c94e6960407124c686",
+      "source_sha256": "8b8a8837b1ad17f05b1b1bbbeeb202f6b84fcdd0ab3fb9c94e6960407124c686"
+    },
+    {
+      "path": "tests/test_sdk.py",
+      "bytes": 2042,
+      "sha256": "17cfcd72a6c5bb83efac71bf2449020e33bbbf78dc3c4b5b81a691ebb5fd9676",
+      "source_sha256": "17cfcd72a6c5bb83efac71bf2449020e33bbbf78dc3c4b5b81a691ebb5fd9676"
+    },
+    {
+      "path": "tests/test_source_batch.py",
+      "bytes": 2741,
+      "sha256": "d77014cb7b02a46e709c00b83f1169543ca522d67e60da20709cd623921a4fa2",
+      "source_sha256": "d77014cb7b02a46e709c00b83f1169543ca522d67e60da20709cd623921a4fa2"
+    },
+    {
+      "path": "tests/test_surface_contacts.py",
+      "bytes": 367,
+      "sha256": "0a1a72ede323b59a267ba23be1f57b26138a2703ba755970b5ed3f1a63873686",
+      "source_sha256": "0a1a72ede323b59a267ba23be1f57b26138a2703ba755970b5ed3f1a63873686"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/SKILL.md",
+      "bytes": 1034,
+      "sha256": "7b11eadbe8c05340ff68646cc3c3d993f1f4c8bdbb13439f30b3bb34ec2a416e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/contact.default.json",
+      "bytes": 152,
+      "sha256": "106b653cd614e2991b3372da17fbfbe9cde28e0f89ecee00cae9febf06e31e3f",
+      "source_sha256": "106b653cd614e2991b3372da17fbfbe9cde28e0f89ecee00cae9febf06e31e3f"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/contact.fast-projection.json",
+      "bytes": 185,
+      "sha256": "b63651b0d89a72a856d891716b0701b6b50c1fc407eddd7caa7c9a4fd1adf839",
+      "source_sha256": "b63651b0d89a72a856d891716b0701b6b50c1fc407eddd7caa7c9a4fd1adf839"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/local-paths.example.json",
+      "bytes": 352,
+      "sha256": "9d8240bd9a5ac3b060df4ae09ff63d19f128e826089aaabe0515731646a1523e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/physics-screen.json",
+      "bytes": 337,
+      "sha256": "591569ac18c3ee96fa4ac79d0af58e0f2bd6069f9975fef27013a7e68cd3b61c",
+      "source_sha256": "591569ac18c3ee96fa4ac79d0af58e0f2bd6069f9975fef27013a7e68cd3b61c"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/robots.example.json",
+      "bytes": 148,
+      "sha256": "b0151ad61e6506a0d4590196dad7dc27ab0536d482d810280afd50bcc57741e9"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/support-screen.conservative.json",
+      "bytes": 272,
+      "sha256": "29b3fc2a66fb1dabb9d80bc2ecaaf783086984e2c06e2e2b79aa228d1592c194",
+      "source_sha256": "29b3fc2a66fb1dabb9d80bc2ecaaf783086984e2c06e2e2b79aa228d1592c194"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/config/support-screen.references.json",
+      "bytes": 1687,
+      "sha256": "141abcf96084f4acdff05c06d7caf5fa45fb4fe94649a022dd1ae69bb8fce200",
+      "source_sha256": "141abcf96084f4acdff05c06d7caf5fa45fb4fe94649a022dd1ae69bb8fce200"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/audit_ground_error.py",
+      "bytes": 4119,
+      "sha256": "92605db0d63e920b7abd2991f6854b62c85e05fb313648fa9606f5500fdc205b",
+      "source_sha256": "92605db0d63e920b7abd2991f6854b62c85e05fb313648fa9606f5500fdc205b"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/audit_soma_contact.py",
+      "bytes": 2835,
+      "sha256": "cda16cc1288557a8b87d0d5ea7b9c2f0219dc09048f5444c8bc47bb6381c9667",
+      "source_sha256": "cda16cc1288557a8b87d0d5ea7b9c2f0219dc09048f5444c8bc47bb6381c9667"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/audit_soma_foot_phases.py",
+      "bytes": 2560,
+      "sha256": "fd005372a411fc76265493d4aa2a0688fab28494ace11e40fff96feeccded169",
+      "source_sha256": "fd005372a411fc76265493d4aa2a0688fab28494ace11e40fff96feeccded169"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/audit_transfer_accuracy.py",
+      "bytes": 5685,
+      "sha256": "50ff5f4fbb09a5b8d7657154ea851ac710c262fe4e7f175aadc0792ea03a275e",
+      "source_sha256": "50ff5f4fbb09a5b8d7657154ea851ac710c262fe4e7f175aadc0792ea03a275e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/bulk_convert_soma.py",
+      "bytes": 11765,
+      "sha256": "2ef3546a3b46ac62549debdd4daf930c06ce5cf70ef9b475f82506878eae9f80",
+      "source_sha256": "2ef3546a3b46ac62549debdd4daf930c06ce5cf70ef9b475f82506878eae9f80"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/export_viewer_robot.py",
+      "bytes": 3607,
+      "sha256": "6c5a07d2549d7854644cf05c1504becdcd79bcca5dde2f69828299ef55f253a3",
+      "source_sha256": "6c5a07d2549d7854644cf05c1504becdcd79bcca5dde2f69828299ef55f253a3"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/invoke.ps1",
+      "bytes": 16944,
+      "sha256": "9222cd01a0421a4910219df40c74af9751feb37f3cdc86ad6bd30b0465906bf9",
+      "source_sha256": "09abfc4529b4b00434f5e534490a47b945b09917a4edc46ca43b4fc88a4bc3ae"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/invoke_physics_audit.ps1",
+      "bytes": 1080,
+      "sha256": "d82ae9e238bc5a0c4cd91db75b2047db28afb4513820ff336b891d53515c72de",
+      "source_sha256": "5c524f0ae234018d75ab3a037a1c08ead5ac6fc59130bf73f1d180eaf1b55419"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/prepare_soma_subset.py",
+      "bytes": 3406,
+      "sha256": "62c311db43ca194dbd9b2b759f473565b54232c867a5971f8504efe93094c89f",
+      "source_sha256": "62c311db43ca194dbd9b2b759f473565b54232c867a5971f8504efe93094c89f"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/render_soma_robot_comparison.py",
+      "bytes": 19210,
+      "sha256": "69b7af14ea173d177aade3f6debcea32b28c606e2a783aef5d0e32154a569c2e",
+      "source_sha256": "69b7af14ea173d177aade3f6debcea32b28c606e2a783aef5d0e32154a569c2e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/render_soma_robot_grid.py",
+      "bytes": 8870,
+      "sha256": "17793e1ec8f1260687d2ab09446712a830e3463e5961da57c03589bf0b41755e",
+      "source_sha256": "17793e1ec8f1260687d2ab09446712a830e3463e5961da57c03589bf0b41755e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/run_soma_locomotion.py",
+      "bytes": 23371,
+      "sha256": "ec56471ad135dfba9965fa84c247f5dee27be261e2a30b8f39abb4f933299650",
+      "source_sha256": "ec56471ad135dfba9965fa84c247f5dee27be261e2a30b8f39abb4f933299650"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/soma_contact_refine.py",
+      "bytes": 7185,
+      "sha256": "792415a85e0c96a2e8dd7d122e4b1bd71bcd93fdf2a7123312e9b30e210017a2",
+      "source_sha256": "792415a85e0c96a2e8dd7d122e4b1bd71bcd93fdf2a7123312e9b30e210017a2"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/summarize_soma_locomotion.py",
+      "bytes": 3350,
+      "sha256": "7b433f199c74f88b3fe95d73191fb7be46afb8b5d4385a1c63ae5f95d674e258",
+      "source_sha256": "7b433f199c74f88b3fe95d73191fb7be46afb8b5d4385a1c63ae5f95d674e258"
+    }
+  ],
+  "excluded": [
+    "datasets",
+    "weights",
+    "robot meshes",
+    "photos",
+    "videos",
+    "gifs",
+    "logs",
+    "credentials",
+    "machine paths",
+    "historical Git metadata",
+    "cloud session/account scripts",
+    "HF publication scripts"
+  ],
+  "publication_performed_by_builder": false
+}

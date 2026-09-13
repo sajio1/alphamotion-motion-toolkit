@@ -1,0 +1,9 @@
+{
+  "repo": "/absolute/path/to/alphamotion-model-repository",
+  "pipeline": "/absolute/path/to/this-package/runtime",
+  "dataset_workspace": "/absolute/path/to/prepared-soma-workspace",
+  "python": "/absolute/path/to/python",
+  "ffmpeg": "/absolute/path/to/ffmpeg",
+  "sole_backend": "/absolute/path/to/this-package/src",
+  "optional_pythonlibs": ""
+}

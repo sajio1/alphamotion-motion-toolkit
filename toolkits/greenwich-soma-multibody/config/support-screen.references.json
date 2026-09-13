@@ -1,0 +1,26 @@
+{
+  "candidate_range_cm_s": [10, 20],
+  "recommended_review_speed_cm_s": 10,
+  "local_minimum_duration_s": 0.1,
+  "caveat": "A literature-informed sensitivity range, not an industry standard, confidence interval or a physical no-slip tolerance. Our persistent material patch/source-stationary masks differ from published metrics. 15 cm/s is an interpolation for sensitivity only; 0.1 s is our local persistence filter.",
+  "sources": [
+    {
+      "title": "PHUMA: Physically-grounded Humanoid Locomotion Dataset, section 3.2",
+      "url": "https://arxiv.org/html/2510.26236v1#S3.SS2",
+      "speed_cm_s": 10,
+      "detail": "Non-Skating is the percentage of contact frames with horizontal foot-region velocity below 10 cm/s, using heel/toe contact scores. This is a frame metric, not a clip failure rule."
+    },
+    {
+      "title": "NVIDIA Kimodo official benchmark metrics",
+      "url": "https://research.nvidia.com/labs/sil/projects/kimodo/docs/benchmark/metrics.html",
+      "speed_cm_s": 20,
+      "detail": "foot_skate_ratio uses toe speed above 0.2 m/s with toe height below 0.05 m at consecutive frames. The separate 0.15 m/s contact consistency threshold is not a foot-skating tolerance."
+    },
+    {
+      "title": "Disney Research: Factorized Motion Diffusion, appendix B, Foot Skating Ratio",
+      "url": "https://assets.studios.disneyresearch.com/app/uploads/2024/10/Factorized-Motion-Diffusion-for-Precise-and-Character-Agnostic-Motion-Inbetweening-Paper.pdf",
+      "speed_cm_s": 7.5,
+      "detail": "Uses heels within 5 cm of the floor and lateral speed above 7.5 cm/s, reporting a frame fraction. This is an additional stricter animation reference."
+    }
+  ]
+}

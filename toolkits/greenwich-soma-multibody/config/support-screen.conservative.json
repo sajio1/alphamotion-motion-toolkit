@@ -1,0 +1,11 @@
+{
+  "source_height_cm": 8.0,
+  "source_speed_cm_s": 2.0,
+  "source_position_tolerance_cm": 0.5,
+  "transition_margin_s": 0.1,
+  "minimum_support_s": 0.2,
+  "target_tilt_speed_deg_s": 20.0,
+  "contact_band_cm": 1.0,
+  "patch_depth_cm": 0.5,
+  "minimum_patch_vertices": 3
+}

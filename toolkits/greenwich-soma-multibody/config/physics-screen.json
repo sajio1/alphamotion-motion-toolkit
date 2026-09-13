@@ -1,0 +1,13 @@
+{
+  "contact_height_m": 0.01,
+  "patch_depth_m": 0.005,
+  "penetration_m": 0.005,
+  "slip_m_s": 0.05,
+  "friction_mu": 0.7,
+  "force_residual_bodyweight": 0.05,
+  "moment_residual_bodyweight_m": 0.03,
+  "derivative_window_s": 0.17,
+  "minimum_bad_duration_s": 0.1,
+  "joint_limit_tolerance_deg": 0.5,
+  "geometry_consistency_m": 0.002
+}

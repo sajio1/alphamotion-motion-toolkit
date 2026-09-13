@@ -1,0 +1,8 @@
+[
+  {
+    "name": "my_robot",
+    "label": "My robot",
+    "body": "my_robot_descriptor_name",
+    "xml": "/absolute/path/to/robot/model.xml"
+  }
+]
