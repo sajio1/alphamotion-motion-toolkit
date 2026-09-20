@@ -1,6 +1,6 @@
 {
   "schema": "alphamotion.source-package.v1",
-  "file_count": 79,
+  "file_count": 101,
   "source_modules": [
     "__init__",
     "_bvh",
@@ -17,6 +17,7 @@
     "kimodo_foot_skate",
     "locomotion_audit",
     "motion",
+    "native_projection",
     "physics_audit",
     "pipeline",
     "preview_candidates",
@@ -27,6 +28,7 @@
     "sampling_statistics",
     "source_batch",
     "source_package",
+    "support_geometry",
     "support_sweep",
     "surface_audit",
     "surface_contacts"
@@ -54,8 +56,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 3605,
-      "sha256": "d5fadbda34914e23f44f03b7f470de1481218e6f4f92dde1cacc604328a828c5"
+      "bytes": 5157,
+      "sha256": "2fa5827e0ced32fc5ea0df4e299430b1bb27222e74d2b56248a21025244f478e"
     },
     {
       "path": "SDK.md",
@@ -69,8 +71,8 @@
     },
     {
       "path": "docs/architecture.md",
-      "bytes": 1309,
-      "sha256": "0c4879d57b1d1b17ab41da15c04ad65fb3d18b85f0d4886af7a1cea28541f5b9"
+      "bytes": 1711,
+      "sha256": "305d7ebd8fde95d4ad2649da788fc6e3ae9371514fd219562e8738fc4443e065"
     },
     {
       "path": "docs/batch.md",
@@ -79,8 +81,8 @@
     },
     {
       "path": "docs/evaluation.md",
-      "bytes": 1822,
-      "sha256": "cdb884b45bd6ceb5dc4dbf769f944bc9c1a5dc5277de3e5783e0090814a2191e"
+      "bytes": 2436,
+      "sha256": "9a4c590d3db03c703d087630a2960301e81b9f1aa8e7cd7e6427f1d883d27250"
     },
     {
       "path": "docs/formats.md",
@@ -99,8 +101,8 @@
     },
     {
       "path": "pyproject.toml",
-      "bytes": 526,
-      "sha256": "989d57dee639e06a3671494bb2d642f122a01463de6339b46366bdfd1273d8c5"
+      "bytes": 544,
+      "sha256": "62e0dce656da970d05db0b713c02dbc6d00940f24117cd0b05d8f6321fd63876"
     },
     {
       "path": "runtime/README.md",
@@ -111,13 +113,13 @@
       "path": "runtime/scripts/render_hiw500_transfer_showcase.py",
       "bytes": 2409,
       "sha256": "39b3c7365d0a6ea50ab7be45bf897051984cd528e107b667c753b6a6624fa685",
-      "source_sha256": "afbcf3e7d02166c453046fbb3f759cfb6ba5131ff9db2569b2e2cde352d79b12"
+      "source_sha256": "39b3c7365d0a6ea50ab7be45bf897051984cd528e107b667c753b6a6624fa685"
     },
     {
       "path": "runtime/scripts/render_single_embodiment_humi_demo.py",
       "bytes": 1614,
       "sha256": "ab460fae169e5d9fc4740aab83fe4be3d6ac99aab7aff66fd8e141da7991732f",
-      "source_sha256": "dff2dd8893d3899699bb62d0d686ba8fec4e034a5f1d73121693a22c7fcf3538"
+      "source_sha256": "ab460fae169e5d9fc4740aab83fe4be3d6ac99aab7aff66fd8e141da7991732f"
     },
     {
       "path": "src/greenwich_motion_sdk/__init__.py",
@@ -210,6 +212,12 @@
       "source_sha256": "ccb84a297948fed49395ae3e579691709b8e8edb4c82bc93b6aeb97a60c7831b"
     },
     {
+      "path": "src/greenwich_motion_sdk/native_projection.py",
+      "bytes": 1583,
+      "sha256": "c0220cbde208e5522d7a58e439325b54777e464cf80815d4c7604fedb7742172",
+      "source_sha256": "c0220cbde208e5522d7a58e439325b54777e464cf80815d4c7604fedb7742172"
+    },
+    {
       "path": "src/greenwich_motion_sdk/physics_audit.py",
       "bytes": 18306,
       "sha256": "3ddc832178336a5de32ef7feeecca6ac84a8beaf2c62008ace7f47a9de70f450",
@@ -265,9 +273,15 @@
     },
     {
       "path": "src/greenwich_motion_sdk/source_package.py",
-      "bytes": 29393,
-      "sha256": "b423a1c3276a5b8bfb99fef362a21730522d51b254c3d40b4730326938aed346",
-      "source_sha256": "b423a1c3276a5b8bfb99fef362a21730522d51b254c3d40b4730326938aed346"
+      "bytes": 33233,
+      "sha256": "baa378c0c5deb7d8a45ab25dfa7e2e53cc24348da6ce80396fb9cbf840bfbfdc",
+      "source_sha256": "baa378c0c5deb7d8a45ab25dfa7e2e53cc24348da6ce80396fb9cbf840bfbfdc"
+    },
+    {
+      "path": "src/greenwich_motion_sdk/support_geometry.py",
+      "bytes": 4225,
+      "sha256": "0c6d5a170dfeff4150c6f20a45a68dcf394ee1016380f422a53d370ea3f5abc0",
+      "source_sha256": "0c6d5a170dfeff4150c6f20a45a68dcf394ee1016380f422a53d370ea3f5abc0"
     },
     {
       "path": "src/greenwich_motion_sdk/support_sweep.py",
@@ -294,9 +308,9 @@
     },
     {
       "path": "src/greenwich_umi_proof/interactive_viewer.py",
-      "bytes": 9858,
-      "sha256": "6247a5704c9425f319681b73e3e7e168ce96fa829bbd09f75ca363b6038b97f1",
-      "source_sha256": "a5a5960cfb37d32bc8c57312da90cc404c49f16271c71f31461d41764e6a8afc"
+      "bytes": 10012,
+      "sha256": "eb93e1606dc48d25075814cc97c30490431f89dfd47399d6bcf63b3e482e1858",
+      "source_sha256": "6247a5704c9425f319681b73e3e7e168ce96fa829bbd09f75ca363b6038b97f1"
     },
     {
       "path": "src/greenwich_umi_proof/native_visual_fk.py",
@@ -360,8 +374,8 @@
     },
     {
       "path": "toolkits/greenwich-soma-multibody/SKILL.md",
-      "bytes": 1034,
-      "sha256": "7b11eadbe8c05340ff68646cc3c3d993f1f4c8bdbb13439f30b3bb34ec2a416e"
+      "bytes": 1521,
+      "sha256": "66fb39421d535c640a3e4e514808036c0488443cfad07ca4d2519bd6a1c6d498"
     },
     {
       "path": "toolkits/greenwich-soma-multibody/config/contact.default.json",
@@ -404,6 +418,102 @@
       "source_sha256": "141abcf96084f4acdff05c06d7caf5fa45fb4fe94649a022dd1ae69bb8fce200"
     },
     {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/README.md",
+      "bytes": 4312,
+      "sha256": "a8eb92af965cdf360e98d45f2bac87fd52d4516278288e75ed24353d3b833acc",
+      "source_sha256": "a8eb92af965cdf360e98d45f2bac87fd52d4516278288e75ed24353d3b833acc"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/collect_delivery_videos.py",
+      "bytes": 4290,
+      "sha256": "6cd065f41c9909c941ae766e3c11b13a671d8536ebc8a0d955130bc4712b3b21",
+      "source_sha256": "6cd065f41c9909c941ae766e3c11b13a671d8536ebc8a0d955130bc4712b3b21"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/compose_variant_videos.py",
+      "bytes": 6578,
+      "sha256": "05ac57c1aeaa7c84557cb6874f60b9df1ca2529075a434a6b5ea1805f3b07cee",
+      "source_sha256": "05ac57c1aeaa7c84557cb6874f60b9df1ca2529075a434a6b5ea1805f3b07cee"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/dex_contact_terms.py",
+      "bytes": 2480,
+      "sha256": "6c4285e30eed932c149367bbff1f7310e418b922ce33ada08e34231fa054dd7d",
+      "source_sha256": "6c4285e30eed932c149367bbff1f7310e418b922ce33ada08e34231fa054dd7d"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/g1_csv_to_mjlab.py",
+      "bytes": 9308,
+      "sha256": "7df0e12d660eae6132a6566169fcdebbcabfbfb95ed1125d6b4d4063f89dc8d2",
+      "source_sha256": "7df0e12d660eae6132a6566169fcdebbcabfbfb95ed1125d6b4d4063f89dc8d2"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/greenwich_to_mjlab_native.py",
+      "bytes": 15006,
+      "sha256": "ba3f1d762336ee1a1cfd1d025e486d29ca5477dd7cdd0c7df31628779d1faa3e",
+      "source_sha256": "ba3f1d762336ee1a1cfd1d025e486d29ca5477dd7cdd0c7df31628779d1faa3e"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/native_robot_cfg.py",
+      "bytes": 9251,
+      "sha256": "bb2d18fc0f715293be92bb5da4a56bd945de9d806a4e885780ff5e3be589ab75",
+      "source_sha256": "bb2d18fc0f715293be92bb5da4a56bd945de9d806a4e885780ff5e3be589ab75"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/package_sim_delivery.py",
+      "bytes": 4166,
+      "sha256": "51a8c74818f0679115c174886b6fef6988cec4b6d7142be9b513b1fac25f1b08",
+      "source_sha256": "51a8c74818f0679115c174886b6fef6988cec4b6d7142be9b513b1fac25f1b08"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/run_queue_after.py",
+      "bytes": 3092,
+      "sha256": "db275c7983af62df6e8a046d9d5d63ba244a1bed6af5b1aef96d116c1c045e13",
+      "source_sha256": "db275c7983af62df6e8a046d9d5d63ba244a1bed6af5b1aef96d116c1c045e13"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/sim9_evaluate.py",
+      "bytes": 9413,
+      "sha256": "8c56f918c717547af4a8595564e6bab535e0ba785a1ef53ac0eb0b60d3c5dd64",
+      "source_sha256": "8c56f918c717547af4a8595564e6bab535e0ba785a1ef53ac0eb0b60d3c5dd64"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/sim9_queue.py",
+      "bytes": 6480,
+      "sha256": "0e7b22c67e4b82eb9f228f246956a37f04d193d53f8e5f1759095044993aaa69",
+      "source_sha256": "0e7b22c67e4b82eb9f228f246956a37f04d193d53f8e5f1759095044993aaa69"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/sim9_worker.py",
+      "bytes": 12059,
+      "sha256": "b878255e3c2cdd31deb9ac8759be681c1b45a05acfe286d23a77c5c76ca33875",
+      "source_sha256": "b878255e3c2cdd31deb9ac8759be681c1b45a05acfe286d23a77c5c76ca33875"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/smoke_native.py",
+      "bytes": 2626,
+      "sha256": "6bbc774d178cfda749c1c1529e90166322c88adf2fa22834988173178aa295ba",
+      "source_sha256": "6bbc774d178cfda749c1c1529e90166322c88adf2fa22834988173178aa295ba"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/summarize_sim_runs.py",
+      "bytes": 3544,
+      "sha256": "4f73065bf962ecf46b1a03317d83759f70e1da9de2f07ba5917519a9914fce89",
+      "source_sha256": "4f73065bf962ecf46b1a03317d83759f70e1da9de2f07ba5917519a9914fce89"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/validate_benchmark_bundle.py",
+      "bytes": 1366,
+      "sha256": "8b59fb5bf0746a67f9e926b0c8fd0ccdd5bfe2012b509835fcdc53fe2e2fdadb",
+      "source_sha256": "8b59fb5bf0746a67f9e926b0c8fd0ccdd5bfe2012b509835fcdc53fe2e2fdadb"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/quality/beyondmimic/video_contact_sheet.py",
+      "bytes": 2733,
+      "sha256": "c2283016f6a620144eebe4b8fabf1bbf94d2f003f1785819ec14241efe6d4a98",
+      "source_sha256": "c2283016f6a620144eebe4b8fabf1bbf94d2f003f1785819ec14241efe6d4a98"
+    },
+    {
       "path": "toolkits/greenwich-soma-multibody/scripts/audit_ground_error.py",
       "bytes": 4119,
       "sha256": "92605db0d63e920b7abd2991f6854b62c85e05fb313648fa9606f5500fdc205b",
@@ -434,22 +544,40 @@
       "source_sha256": "2ef3546a3b46ac62549debdd4daf930c06ce5cf70ef9b475f82506878eae9f80"
     },
     {
+      "path": "toolkits/greenwich-soma-multibody/scripts/compact_robot_motion_delivery.py",
+      "bytes": 6042,
+      "sha256": "fed9d6bfe84b4723e890fcae232753fc3eff6768c985e7df28b2e03ab97dbc8a",
+      "source_sha256": "fed9d6bfe84b4723e890fcae232753fc3eff6768c985e7df28b2e03ab97dbc8a"
+    },
+    {
       "path": "toolkits/greenwich-soma-multibody/scripts/export_viewer_robot.py",
       "bytes": 3607,
       "sha256": "6c5a07d2549d7854644cf05c1504becdcd79bcca5dde2f69828299ef55f253a3",
       "source_sha256": "6c5a07d2549d7854644cf05c1504becdcd79bcca5dde2f69828299ef55f253a3"
     },
     {
+      "path": "toolkits/greenwich-soma-multibody/scripts/finalize_h2_compact_delivery.py",
+      "bytes": 6976,
+      "sha256": "9c7663051501fec286ad72fd9fa43ff0d525cca32607a8ed30cbf5eee46e138f",
+      "source_sha256": "9c7663051501fec286ad72fd9fa43ff0d525cca32607a8ed30cbf5eee46e138f"
+    },
+    {
       "path": "toolkits/greenwich-soma-multibody/scripts/invoke.ps1",
       "bytes": 16944,
       "sha256": "9222cd01a0421a4910219df40c74af9751feb37f3cdc86ad6bd30b0465906bf9",
-      "source_sha256": "09abfc4529b4b00434f5e534490a47b945b09917a4edc46ca43b4fc88a4bc3ae"
+      "source_sha256": "9222cd01a0421a4910219df40c74af9751feb37f3cdc86ad6bd30b0465906bf9"
     },
     {
       "path": "toolkits/greenwich-soma-multibody/scripts/invoke_physics_audit.ps1",
-      "bytes": 1080,
-      "sha256": "d82ae9e238bc5a0c4cd91db75b2047db28afb4513820ff336b891d53515c72de",
-      "source_sha256": "5c524f0ae234018d75ab3a037a1c08ead5ac6fc59130bf73f1d180eaf1b55419"
+      "bytes": 1179,
+      "sha256": "6cb9c052f8657cc8b602b618d9838af67594f2e46b49a322252d5a6566e65f34",
+      "source_sha256": "d82ae9e238bc5a0c4cd91db75b2047db28afb4513820ff336b891d53515c72de"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/package_compact_shards.py",
+      "bytes": 3378,
+      "sha256": "e631ea607fc971790a38b4c350f09aeababdc6a4dd97f335e352773d74753872",
+      "source_sha256": "e631ea607fc971790a38b4c350f09aeababdc6a4dd97f335e352773d74753872"
     },
     {
       "path": "toolkits/greenwich-soma-multibody/scripts/prepare_soma_subset.py",
@@ -471,15 +599,21 @@
     },
     {
       "path": "toolkits/greenwich-soma-multibody/scripts/run_soma_locomotion.py",
-      "bytes": 23371,
-      "sha256": "ec56471ad135dfba9965fa84c247f5dee27be261e2a30b8f39abb4f933299650",
-      "source_sha256": "ec56471ad135dfba9965fa84c247f5dee27be261e2a30b8f39abb4f933299650"
+      "bytes": 32118,
+      "sha256": "ccf47d51bed6351e4e28ffd775793486c00c9e9e46e77b8ff7a6ee2d256ca7c2",
+      "source_sha256": "ccf47d51bed6351e4e28ffd775793486c00c9e9e46e77b8ff7a6ee2d256ca7c2"
     },
     {
       "path": "toolkits/greenwich-soma-multibody/scripts/soma_contact_refine.py",
-      "bytes": 7185,
-      "sha256": "792415a85e0c96a2e8dd7d122e4b1bd71bcd93fdf2a7123312e9b30e210017a2",
-      "source_sha256": "792415a85e0c96a2e8dd7d122e4b1bd71bcd93fdf2a7123312e9b30e210017a2"
+      "bytes": 19634,
+      "sha256": "934b42cb759124872950fcc09884edb789354cf8aa101fda2a7e65063e4b5f0b",
+      "source_sha256": "934b42cb759124872950fcc09884edb789354cf8aa101fda2a7e65063e4b5f0b"
+    },
+    {
+      "path": "toolkits/greenwich-soma-multibody/scripts/stream_compact50_delivery.py",
+      "bytes": 4692,
+      "sha256": "4c94a09268abc59b93d05b90e52d117fe1147b4259bd7ee4845f50bda0c527ed",
+      "source_sha256": "4c94a09268abc59b93d05b90e52d117fe1147b4259bd7ee4845f50bda0c527ed"
     },
     {
       "path": "toolkits/greenwich-soma-multibody/scripts/summarize_soma_locomotion.py",

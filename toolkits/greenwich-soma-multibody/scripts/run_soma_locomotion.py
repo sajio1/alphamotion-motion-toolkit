@@ -20,10 +20,14 @@ def main():
     p.add_argument('--contact-iters',type=int,default=500)
     p.add_argument('--input-representation',choices=['soma77','smpl22-derived'],default='soma77')
     p.add_argument('--contact-config',type=Path,help='JSON overrides for shared contact/flight weights and phase margins')
+    p.add_argument('--coordination-config',type=Path,help='Opt-in body-relative SOMA hand/trunk refinement profile')
     p.add_argument('--skip-preview',action='store_true',help='Do not render per-robot MP4 previews')
     p.add_argument('--compact',action='store_true',help='Save one reconstruction-complete NPZ bundle per source motion')
     p.add_argument('--cache',type=Path,help='Shared AlphaMotion cache for resumable bulk jobs')
     p.add_argument('--chunk',type=int,default=32);p.add_argument('--ffmpeg',required=True);a=p.parse_args()
+    contact_config=json.loads(a.contact_config.read_text()) if a.contact_config else {}
+    projection_geometry_strength=contact_config.pop('projection_geometry_weight',0.)
+    projection_method=contact_config.pop('projection_method','global')
     sys.dont_write_bytecode=True
     sys.path[:0]=[str(a.repo/'src'),str(a.pipeline/'src'),str(a.pipeline/'scripts')]+([str(a.dataset_workspace/'work')] if a.dataset_workspace else [])
     os.environ['HF_HUB_OFFLINE']='1';os.environ['HF_HOME']=str(a.repo/'.local/huggingface');os.environ['ALPHAMOTION_CACHE']=str(a.cache or a.output/'cache')
@@ -33,6 +37,8 @@ def main():
     sys.path.insert(0,str(Path(__file__).resolve().parents[3]/'src'))
     from greenwich_motion_sdk._bvh import load_bvh
     from greenwich_motion_sdk import load_motion
+    from greenwich_motion_sdk.surface_contacts import NativeSurfaceContacts
+    from greenwich_motion_sdk.support_geometry import build_endpoint_surface_model
     from alphamotion.engine.nets.rotations import SkeletonSpec
     from alphamotion.embodiment.dof_features import ball_dof
     from alphamotion.engine.spatial import fk_pos
@@ -73,7 +79,9 @@ def main():
     for robot in json.loads(a.robots.read_text(encoding='utf-8-sig')):
         spec,dof,rest,*_=build_from_mjcf(robot['xml'],robot['body']);keys=key_joints(spec)[0]
         sole=build_foot_sole_model(robot['xml'],spec,rest,['left_foot','right_foot'],keys[4:6])
-        targets.append((robot,spec,dof,rest,sole))
+        support_surface=build_endpoint_surface_model(robot['xml'],spec,rest,
+            ['left_foot','right_foot','left_hand','right_hand'],keys[4:6]+keys[2:4])
+        targets.append((robot,spec,dof,rest,sole,support_surface,NativeSurfaceContacts(robot['xml'],robot['body'])))
     startup=time.perf_counter()-begin;ledger=[]
     for row in rows:
         compact_payload={'schema':np.array('greenwich.soma18.compact.v1'),'stem':np.array(row['stem']),'fps':np.array(a.fps,dtype=np.float32)}
@@ -87,6 +95,8 @@ def main():
             b={'names':clip.names,'parents':clip.parents,'positions':clip.world_position_cm,'dt':dt_source}
             root=clip.world_position_cm[take,0].copy();source_p=clip.world_position_cm[take].copy()
             footids=row['foot_indices'];bind_clear=np.array(row['foot_landmark_height_cm'])
+            landmark_heights=np.array(row['foot_landmark_heights_cm'])
+            source_roles=row['source_role_indices']
         else:
             b=load_bvh(source_dir/(row['stem']+'.bvh'))
             clip=load_motion(source_dir/(row['stem']+'.bvh'),format='soma',bind_path=source_dir/'soma_base_skel_minimal.bvh')
@@ -100,6 +110,8 @@ def main():
             source_p=b['positions'][take].copy();source_p[:,:,[0,2]]-=b['positions'][0,1,[0,2]]
             footids=[b['names'].index(n) for n in ['LeftFoot','LeftToeBase','RightFoot','RightToeBase']]
             bind_clear=np.array([bind['positions'][0,footids[:2],1].min(),bind['positions'][0,footids[2:],1].min()])
+            landmark_heights=bind['positions'][0,footids,1]
+            source_roles=[b['names'].index(n) for n in ['Hips','Head','LeftHand','RightHand','LeftFoot','RightFoot']]
         # Ground stays SOMA Y=0. Never estimate it from the minimum animated foot.
         source_foot=source_p[:,footids];source_clear=np.stack([source_foot[:,:2,1].min(1),source_foot[:,2:,1].min(1)],1)
         velocity=np.linalg.norm(np.diff(source_foot[:,:,[0,2]],axis=0),axis=-1)*a.fps
@@ -109,6 +121,30 @@ def main():
         # Remove the anatomical landmark-to-sole offset using source bind pose.
         # This does not move the ground or rescale the source trajectory.
         source_clearance=np.maximum(source_clear-bind_clear,0.)
+        # The original refiner only exposed two foot labels.  Add semantic hand
+        # support without changing the source motion: a wrist that is both low
+        # in the declared source floor frame and locally slow can bear weight.
+        # The fixed thresholds describe human endpoint observations, not any
+        # target robot, and therefore transfer unchanged across embodiments.
+        source_hand=source_p[:,source_roles[2:4]]
+        source_hand_contact=source_hand[:,:,1]<25.
+        from scipy.ndimage import maximum_filter1d,minimum_filter1d
+        source_hand_contact=minimum_filter1d(maximum_filter1d(source_hand_contact.astype(np.uint8),3,axis=0,mode='nearest'),3,axis=0,mode='nearest').astype(bool)
+        flat_support=None
+        if contact_config.get('release_support'):
+            if a.source_manifest and not row['foot_landmarks_calibrated']:
+                raise ValueError('Released support needs four calibrated foot_landmark_heights_cm in source ankle/toe order')
+            from greenwich_motion_sdk.contact_phases import released_support
+            conservative_contact,flat_support=released_support(source_foot,landmark_heights,a.fps)
+            if contact_config.get('conservative_support'): source_contact=conservative_contact
+        # A single root height cannot independently satisfy feet and hands.
+        # Preserve foot support through the brief hand-approach overlap, then
+        # switch to hands once the source feet release.  This prevents an
+        # impossible four-endpoint projection from pulling feet through floor.
+        refine_foot_contact=source_contact.copy()
+        active_hand_contact=source_hand_contact.copy()
+        active_hand_contact[source_contact.any(1)]=False
+        source_support=np.concatenate([refine_foot_contact,active_hand_contact],axis=1)
         gr=clip.global_rotation[take]
         gp=clip.world_position_cm[take]-clip.world_position_cm[take,:1]
         r6=c.matrix_to_rot6d(torch.tensor(gr,dtype=torch.float32))
@@ -134,13 +170,14 @@ def main():
         t=time.perf_counter()
         codes=torch.cat([gw.encode(pose[k:k+a.chunk],encode_spec,encode_dof) for k in range(0,len(take),a.chunk)])
         torch.cuda.synchronize();encode_s=time.perf_counter()-t
-        for robot,spec,dof,rest,sole in targets:
+        for robot,spec,dof,rest,sole,support_surface,surfaces in targets:
             folder=a.output/row['stem']/robot['name']
             if not a.compact:folder.mkdir(parents=True,exist_ok=True)
             t=time.perf_counter();out=[gw.decode_full(codes[k:k+a.chunk],spec,dof,contact=True) for k in range(0,len(take),a.chunk)]
             raw=torch.cat([x[0] for x in out]);dp=torch.cat([x[1] for x in out]);contact=torch.cat([x[2] for x in out]);torch.cuda.synchronize();decode_s=time.perf_counter()-t
             t=time.perf_counter();dt=torch.tensor(dof,device='cuda',dtype=torch.float64);rs=torch.tensor(rest,device='cuda',dtype=torch.float64)
-            q,_=c.fit_angles(raw.double(),spec,dt,rest=rs,method='global',lm_iters=12,soft_margin=1.,clamp=True)
+            from greenwich_motion_sdk.native_projection import project
+            q,_,projection_info=project(raw.double(),spec,dt,rs,geometry_strength=projection_geometry_strength,method=projection_method)
             rr=c.rot6d_to_matrix(raw.double())[:,0]
             if a.contact_iters:
                 # Symmetric short-window SO(3) smoothing; same timestamps, no lag.
@@ -156,12 +193,48 @@ def main():
             rawpos=fk_pos(raw.detach().cpu().numpy(),spec)+root_target[:,None]
             rawsole=sole.sample(rawpos,c.rot6d_to_matrix(raw).detach().cpu().numpy())
             raw_penetration=float(max(np.maximum(-v.lowest_y_cm,0).max() for v in rawsole.values()))
-            refinement=None
+            refinement=None;coordination=None;joint_coordination=None
+            profile=json.loads(a.coordination_config.read_text(encoding='utf-8-sig')) if a.coordination_config else {}
+            if profile and (profile.get('arm_target_mode')!='body_coordination' or set(profile)-{'arm_target_mode','direction_iterations','optimize_trunk','solver_mode','joint_reference'}):
+                raise ValueError('Generation requires a supported body_coordination profile')
+            mode=profile.get('solver_mode','serial')
+            if mode not in ('serial','partitioned_shared_fk'):raise ValueError('Unknown coordination solver mode')
+            if mode=='partitioned_shared_fk':
+                if not a.contact_iters:raise ValueError('Joint experiment needs contact iterations')
+                from greenwich_motion_sdk.body_coordination import refine_coordination
+                joint_coordination=refine_coordination(source_p,b['names'],q.detach(),rot.detach(),spec,dt,rs,
+                    key_joints(spec)[0][2:4],key_joints(spec)[0][4:6],fps=a.fps,iterations=a.contact_iters,
+                    palm_frames=robot.get('palm_frames'),optimize_trunk=profile.get('optimize_trunk',False),prepare_only=True)
+                reference_mode=profile.get('joint_reference','initial_projection')
+                if reference_mode not in ('initial_projection','contact_detached'):raise ValueError('Unknown joint arm reference')
+                joint_coordination.follow_contact_reference=reference_mode=='contact_detached'
             if a.contact_iters:
-                q,rot,world_t,root_target,refinement=refine(q,root_target,rr,spec,dt,rs,sole,source_contact,a.fps,a.contact_iters,source_clearance=source_clearance,config=json.loads(a.contact_config.read_text()) if a.contact_config else None)
+                q,rot,world_t,root_target,refinement=refine(q,root_target,rr,spec,dt,rs,sole,refine_foot_contact,a.fps,a.contact_iters,source_clearance=source_clearance,config=contact_config,flat_support=flat_support,coordination=joint_coordination,support_surface=support_surface,support_mask=source_support)
                 world=world_t.detach().cpu().numpy()
+            if joint_coordination is not None:
+                coordination={'solver_mode':mode,'iterations':a.contact_iters,'solve_seconds':0.,
+                    'joint_reference':profile.get('joint_reference','initial_projection'),
+                    'timing_scope':'included in contact_refinement.seconds; do not add twice',
+                    'before_terms':joint_coordination.before_terms,
+                    'after_terms':[float(t.detach()) for t in joint_coordination.terms(q)],
+                    'anatomical_audit_after':joint_coordination.terms(q,True),
+                    'optimize_trunk':False,'gradient_partition':'arm loss updates arm variables only',
+                    'shared_fk':True,'visual_review':'pending','physical_validation':'not performed'}
+            if a.coordination_config and mode=='serial':
+                from greenwich_motion_sdk.body_coordination import refine_coordination
+                profile=json.loads(a.coordination_config.read_text(encoding='utf-8-sig'))
+                if profile.get('arm_target_mode')!='body_coordination' or set(profile)-{'arm_target_mode','direction_iterations','optimize_trunk','solver_mode'}:
+                    raise ValueError('Generation requires an explicit body_coordination profile')
+                q,_,coordination=refine_coordination(source_p,b['names'],q.detach(),rot.detach(),spec,dt,rs,
+                    key_joints(spec)[0][2:4],key_joints(spec)[0][4:6],fps=a.fps,
+                    iterations=int(profile.get('direction_iterations',100)),palm_frames=robot.get('palm_frames'),
+                    optimize_trunk=profile.get('optimize_trunk',False))
+                rot,pos=c.fk_from_angles(q,spec,dt,rest=rs,root_R=rr)
+                world=pos.detach().cpu().numpy()+root_target[:,None]
             rotation=rot.detach().cpu().numpy();samples=sole.sample(world,rotation)
             heights=np.stack([v.lowest_y_cm for v in samples.values()],1)
+            support_samples=support_surface.sample(world,rotation)
+            support_heights=np.stack([v.lowest_y_cm for v in support_samples.values()],1)
             feet=np.stack([v.sole_point_cm for v in samples.values()],1)
             predicted=torch.sigmoid(contact[:,sole.joints]).detach().cpu().numpy()>.8
             edge=predicted[1:]&predicted[:-1]
@@ -174,11 +247,11 @@ def main():
                    'input':input_description,'input_representation':row['source_format'] if a.source_manifest else a.input_representation,
                    'source_joint_count':encode_spec.J,'source_fk_max_error_cm':fk_error,
                    'max_joint_limit_violation_rad':limit_violation,
-                   'contact_refinement':refinement,'raw_rotation_fk_penetration_cm':raw_penetration,'before_contact_penetration_cm':before_penetration,
-                   'root_height':'Prime decoder pos[:,root,0] metres + explicit contact residual; no render lift',
-                   'horizontal_translation':'source XZ guide + contact residual; NOT model-predicted locomotion translation',
-                   'ground':'canonical Y=0; explicit source floor; contact corrected in saved motion, no render-only lift',
-                   'projection':'native joint limits + minimal contact residual; source support proxy, no standing recovery',
+                   'contact_refinement':refinement,'body_coordination':coordination,'native_projection':projection_info,'raw_rotation_fk_penetration_cm':raw_penetration,'before_contact_penetration_cm':before_penetration,
+                   'root_height':'Prime decoder pos[:,root,0] metres'+(' + explicit contact residual' if refinement else '; unrefined')+'; no render lift',
+                   'horizontal_translation':'source XZ guide'+(' + contact residual' if refinement else '')+'; NOT model-predicted locomotion translation',
+                   'ground':'canonical Y=0; explicit source floor; '+('contact corrected in saved motion' if refinement else 'no contact correction')+'; no render-only lift',
+                   'projection':'native joint-limit projection (12 iterations)'+(' + contact residual' if refinement else '; no contact/temporal refinement')+'; no standing recovery',
                    'root_height_cm':[float(root_target[:,1].min()),float(root_target[:,1].max())],
                    'source_root_height_cm':[float(root[:,1].min()),float(root[:,1].max())],
                    'max_penetration_cm':float(np.maximum(-heights,0).max()),
@@ -187,11 +260,26 @@ def main():
                    'predicted_support_slip_p95_cm_s':float(np.percentile(speeds[edge],95)) if edge.any() else None,
                    'source_support_clearance_p95_cm':float(np.percentile(np.abs(heights[source_contact]),95)) if source_contact.any() else None,
                    'source_support_slip_p95_cm_s':float(np.percentile(speeds[source_edge],95)) if source_edge.any() else None,
-                   'source_contact_scope':'ankle/toe proxy; <8 cm and <25 cm/s; used only during source support intervals',
+                   'source_contact_scope':('same source landmark within 1.5 cm of calibrated height and both adjacent 3D speeds <=15 cm/s' if contact_config.get('conservative_support') else 'ankle/toe proxy; <8 cm and <25 cm/s; used only during source support intervals'),
+                   'source_hand_support_scope':'semantic wrist height <25 cm; short gaps closed over three frames; geometry proxy, not force truth',
+                   'source_hand_support_frames':source_hand_contact.sum(0).tolist(),
+                   'active_hand_support_frames':active_hand_contact.sum(0).tolist(),
+                   'support_surface_roles':list(support_surface.roles),
+                   'support_surface_min_max_cm':np.stack([support_heights.min(0),support_heights.max(0)],1).tolist(),
+                   'support_surface_geometry':support_surface.report,
+                   'sole_slip_scope':('persistent lowest material surface points during source support' if contact_config.get('contact_patch_slip') else 'eroded two-landmark low/slow support; release foot roll' if contact_config.get('release_support') else 'consecutive broad source support'),
+                   'source_foot_landmark_heights_cm':landmark_heights.tolist(),
+                   'source_clearance_offset_cm':bind_clear.tolist(),
                    'timing_s':{'startup_shared':startup,'encode_shared':encode_s,'decode':decode_s,'joint_projection':projection_s},'visual_review':'pending'}
             final_rot6d=c.matrix_to_rot6d(rot).detach().cpu().numpy()
+            contact_start=time.perf_counter()
+            surface_payload=surfaces.measure(q.detach().cpu().numpy(),root_target,rotation[:,0],spec.joint_names)
+            stats['timing_s']['surface_contacts']=time.perf_counter()-contact_start
+            stats['surface_contacts']={'kind':'native visual mesh proximity; not force labels','surfaces':len(surfaces.ids),
+                'contact_band_cm':1.,'penetration_threshold_cm':.5,'ground':'canonical Y=0'}
             if a.compact:
                 prefix=robot['name']+'__'
+                compact_payload.update({prefix+k:v for k,v in surface_payload.items()})
                 compact_payload[prefix+'q']=q.detach().cpu().numpy().astype(np.float32)
                 compact_payload[prefix+'root_rot6d']=final_rot6d[:,0].astype(np.float32)
                 compact_payload[prefix+'root_t_cm']=np.asarray(root_target,dtype=np.float32)
@@ -203,8 +291,7 @@ def main():
                 brief['artifact']='motions/'+row['stem']+'.npz';ledger.append(brief)
                 (a.output/'results.json').write_text(json.dumps(ledger,indent=2));print(json.dumps(brief),flush=True)
                 continue
-            source_roles=row['source_role_indices'] if a.source_manifest else [b['names'].index(n) for n in ['Hips','Head','LeftHand','RightHand','LeftFoot','RightFoot']]
-            np.savez_compressed(folder/'motion.npz',constraint_joint_indices=np.array(key_joints(spec)[0][2:4]),q=q.detach().cpu().numpy(),rot6d=final_rot6d,raw_rot6d=raw.detach().cpu().numpy(),decoder_position=dp.detach().cpu().numpy(),root_t=root_target,world_position_cm=world,joint_names=np.array(spec.joint_names),fps=a.fps,sole_surface_height_cm=heights,source_root_cm=root,source_positions_cm=source_p,source_joint_names=np.array(b['names']),source_parents=b['parents'],source_contact_proxy=source_contact,model_contact=predicted,source_role_indices=np.array(source_roles),source_timestamps_s=clip.timestamps_s[take]-clip.timestamps_s[take[0]],source_foot_indices=np.array(footids))
+            np.savez_compressed(folder/'motion.npz',**surface_payload,constraint_joint_indices=np.array(key_joints(spec)[0][2:4]),q=q.detach().cpu().numpy(),rot6d=final_rot6d,raw_rot6d=raw.detach().cpu().numpy(),decoder_position=dp.detach().cpu().numpy(),root_t=root_target,world_position_cm=world,joint_names=np.array(spec.joint_names),fps=a.fps,sole_surface_height_cm=heights,support_surface_height_cm=support_heights,support_surface_roles=np.asarray(support_surface.roles),source_root_cm=root,source_positions_cm=source_p,source_joint_names=np.array(b['names']),source_parents=b['parents'],source_contact_proxy=source_contact,source_support_proxy=source_support,model_contact=predicted,source_role_indices=np.array(source_roles),source_timestamps_s=clip.timestamps_s[take]-clip.timestamps_s[take[0]],source_foot_indices=np.array(footids),source_clearance_cm=source_clearance)
             if a.skip_preview:
                 stats['timing_s']['render']=0.0
                 (folder/'report.json').write_text(json.dumps(stats,indent=2))

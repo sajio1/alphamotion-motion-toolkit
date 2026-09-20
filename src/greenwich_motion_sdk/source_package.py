@@ -13,7 +13,8 @@ import zipfile
 
 CORE = ('__init__', 'motion', 'adapters', '_bvh', '_smpl_bind', 'pipeline', 'source_batch', 'evaluation',
         'reports', 'compact', 'contact_labels', 'surface_contacts', 'physics_audit',
-        'fixed_support', 'locomotion_audit', 'kimodo_foot_skate', 'corpus_screen',
+        'fixed_support', 'locomotion_audit', 'kimodo_foot_skate',
+        'support_geometry', 'native_projection', 'corpus_screen',
         'corpus_support', 'support_sweep', 'sampling_statistics', 'surface_audit',
         'render_review', 'card_gallery', 'review_sampling', 'review_sources',
         'preview_candidates', 'source_package')
@@ -22,7 +23,16 @@ SCRIPTS = ('run_soma_locomotion.py', 'soma_contact_refine.py',
            'audit_soma_foot_phases.py', 'audit_ground_error.py',
            'summarize_soma_locomotion.py', 'render_soma_robot_comparison.py',
            'render_soma_robot_grid.py', 'export_viewer_robot.py',
-           'prepare_soma_subset.py', 'bulk_convert_soma.py')
+           'prepare_soma_subset.py', 'bulk_convert_soma.py',
+           'compact_robot_motion_delivery.py', 'package_compact_shards.py',
+           'stream_compact50_delivery.py', 'finalize_h2_compact_delivery.py')
+QC_FILES = ('README.md', 'collect_delivery_videos.py', 'compose_variant_videos.py',
+            'dex_contact_terms.py', 'g1_csv_to_mjlab.py',
+            'greenwich_to_mjlab_native.py', 'native_robot_cfg.py',
+            'package_sim_delivery.py', 'run_queue_after.py', 'sim9_evaluate.py',
+            'sim9_queue.py', 'sim9_worker.py', 'smoke_native.py',
+            'summarize_sim_runs.py', 'validate_benchmark_bundle.py',
+            'video_contact_sheet.py')
 CONFIGS = ('contact.default.json', 'contact.fast-projection.json',
            'physics-screen.json', 'support-screen.conservative.json',
            'support-screen.references.json')
@@ -66,6 +76,9 @@ def build(sdk_root, runtime, output):
     for module in sorted(modules):copy(sdk_root/'src/greenwich_motion_sdk'/(module+'.py'),'src/greenwich_motion_sdk/'+module+'.py')
     toolkit=sdk_root/KIT
     for name in SCRIPTS:copy(toolkit/'scripts'/name,KIT+'/scripts/'+name)
+    for name in QC_FILES:
+        copy(toolkit/'quality/beyondmimic'/name,
+             KIT+'/quality/beyondmimic/'+name)
     for name in CONFIGS:copy(toolkit/'config'/name,KIT+'/config/'+name)
     for name in ('test_sdk.py','test_source_batch.py','test_physics_audit.py','test_contact_labels.py','test_surface_contacts.py','test_locomotion_source_phase.py','test_compact_soma_bundle.py'):
         copy(sdk_root/'tests'/name,'tests/'+name)
@@ -153,12 +166,12 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 [project]
 name = "alphamotion-motion-toolkit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Modular motion adapters, native robot retargeting, contact refinement and offline evaluation"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 [project.optional-dependencies]
-runtime = ["torch", "mujoco>=3.2", "opencv-python", "pandas", "pyarrow", "matplotlib", "Pillow"]
+runtime = ["torch", "mujoco>=3.2", "opencv-python", "imageio-ffmpeg", "pandas", "pyarrow", "matplotlib", "Pillow"]
 test = ["pytest"]
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -227,7 +240,14 @@ DOCUMENTS = {
  'README.md': '''# AlphaMotion Motion Toolkit
 
 Data adapters -> canonical MotionClip -> AlphaMotion model -> native joint
-projection -> shared contact refinement -> saved NPZ -> evaluation and review.
+projection -> support-aware contact refinement -> saved NPZ -> evaluation and review.
+
+Root height follows the active load-bearing endpoint family. Ordinary support
+uses feet; inverted support uses semantic hand endpoints. Fixed wrist/TCP
+origins are used when a robot has no hand mesh, without per-robot offsets.
+
+This conversion path is the primary product. Optional controller-training adapters are downstream
+quality checks and do not replace the saved-motion audits or alter generated trajectories.
 
 This is a data-free source snapshot of the current pipeline, not model weights.
 Components are configurable independently; evaluation reads saved output and
@@ -278,6 +298,19 @@ multiple robots. Native SMPL, generic BVH and canonical files use the same backe
 
 See [formats](docs/formats.md) for the explicit manifest and validation scope.
 
+## Package compact robot deliveries
+
+Reusable delivery tools live beside the SOMA scripts. They produce one compact robot-motion schema,
+deterministic `tar.zst` shards, resumable transfer state, checksums, and an explicit failure ledger.
+Source SOMA arrays and model intermediates are not duplicated into the robot-motion delivery.
+
+```powershell
+python toolkits/greenwich-soma-multibody/scripts/compact_robot_motion_delivery.py `
+  --source /path/to/generated --output /path/to/compact --robot h2 --workers 4
+python toolkits/greenwich-soma-multibody/scripts/package_compact_shards.py `
+  --source /path/to/compact --output /path/to/shards --prefix h2 --name h2-compact50
+```
+
 ## Evaluate saved outputs
 
 For noncompact Convert output, run:
@@ -296,6 +329,14 @@ penetration and disclosed source/robot pose differences. Corpus entrypoints
 `ScreenSample`, `ScreenStatistical`, `ScreenAll`, `SurfaceAudit` and
 `RescreenSurfaces` reuse saved traces and caches. See [evaluation](docs/evaluation.md).
 
+## Optional BeyondMimic QC
+
+`toolkits/greenwich-soma-multibody/quality/beyondmimic` contains the parameterized adapter used to
+test whether a saved Greenwich trajectory can be learned by a particular MjLab/BeyondMimic robot
+and controller configuration. It is intentionally secondary to conversion. Robot assets, MjLab,
+policies, motion data and videos remain external. See its README for queue, evaluation, packaging
+and interpretation boundaries.
+
 ## Review and extend
 
 See [robot integration](docs/robots.md), [Python API](docs/api.md),
@@ -313,6 +354,8 @@ SOURCE_MANIFEST.json records the reviewed source snapshot and file hashes.
 | Realization | native joint projection | target axes, rest frames and limits |
 | Refinement | soma_contact_refine.py | shared contact/flight weights and iteration budget |
 | Evaluation | locomotion_audit, fixed_support, surface_audit, physics_audit | thresholds and saved caches |
+| Delivery | compact_robot_motion_delivery, package_compact_shards | robot schema, shard size and destination |
+| Optional controller QC | quality/beyondmimic | MjLab robot/controller/training configuration |
 | Review | render_review, card_gallery | source-synchronized views and GIF files |
 
 SDK orchestration is Pipeline.run / Pipeline.convert / scripts/invoke.ps1. Native geometry lives in
@@ -323,6 +366,9 @@ All full-body source loaders share MotionClip and the same model, projection and
 contact refiner. Indexed SOMA batches use Pipeline.run; explicit file manifests
 use Pipeline.convert. evaluation.evaluate_outputs reuses the native sole screen.
 Independent native SMPL corpus quality is not established by an adapter smoke test.
+
+BeyondMimic is downstream QC only. Its results must not be folded back into a claim that the
+converter passed or failed until reference feasibility and robot/controller effects are separated.
 ''',
  'docs/formats.md': '''# Source adapter contract
 
@@ -433,6 +479,15 @@ execution certificate is issued by a pass.
 Compact NPZ predicted contact fields retain two foot channels. Green all-surface
 paint is geometric proximity, not force, pressure, fractional area or a measured
 full-body contact annotation. Keep those fields and meanings separate.
+
+## Downstream controller QC
+
+The optional `toolkits/greenwich-soma-multibody/quality/beyondmimic` adapter trains and evaluates a
+tracking policy against saved robot trajectories. Report success rate, full-duration coverage,
+body/joint error, support slip proxy and actuator-force statistics together. A failure can originate
+in the converted reference, robot collision geometry, controller interface, reward/contact inputs,
+termination thresholds or training budget. It is not by itself proof that the Greenwich model did
+not understand the source motion. A pass is not a dynamics or hardware-safety certificate.
 ''',
  'docs/api.md': '''# Python integration
 
@@ -525,7 +580,13 @@ Compact corpus traces use locomotion_audit and independent source manifests.
 Keep source floor, unit, rotation and role mappings explicit. No trajectory
 resizing or hidden floor estimation. Shared contact refinement is in
 scripts/soma_contact_refine.py with config/contact.default.json.
+The locomotion entrypoint derives foot and hand support from source semantics;
+root height follows the active support family. Fixed wrist/TCP endpoints are
+used when a robot has no native hand mesh, without per-robot height offsets.
 Support/penetration screens are necessary checks, not dynamics certificates.
+Use scripts/compact_robot_motion_delivery.py and package_compact_shards.py for robot-motion
+delivery. BeyondMimic under quality/beyondmimic is optional downstream QC, never the primary
+conversion path or a substitute for reference-feasibility screening.
 EGO/UMI sparse pipelines belong to the separate legacy toolkit.
 '''
 

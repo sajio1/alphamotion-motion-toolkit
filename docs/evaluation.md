@@ -28,3 +28,12 @@ execution certificate is issued by a pass.
 Compact NPZ predicted contact fields retain two foot channels. Green all-surface
 paint is geometric proximity, not force, pressure, fractional area or a measured
 full-body contact annotation. Keep those fields and meanings separate.
+
+## Downstream controller QC
+
+The optional `toolkits/greenwich-soma-multibody/quality/beyondmimic` adapter trains and evaluates a
+tracking policy against saved robot trajectories. Report success rate, full-duration coverage,
+body/joint error, support slip proxy and actuator-force statistics together. A failure can originate
+in the converted reference, robot collision geometry, controller interface, reward/contact inputs,
+termination thresholds or training budget. It is not by itself proof that the Greenwich model did
+not understand the source motion. A pass is not a dynamics or hardware-safety certificate.

@@ -1,7 +1,15 @@
 # AlphaMotion Motion Toolkit
 
 Data adapters -> canonical MotionClip -> AlphaMotion model -> native joint
-projection -> shared contact refinement -> saved NPZ -> evaluation and review.
+projection -> support-aware contact refinement -> saved NPZ -> evaluation and review.
+
+The root-height refinement follows the active load-bearing endpoint family:
+feet for ordinary support and semantic hand endpoints for inverted support.
+This rule is shared across robots; it does not contain K1- or action-specific
+height offsets. Robots without hand meshes use their declared wrist/TCP origin.
+
+This conversion path is the primary product. Optional controller-training adapters are downstream
+quality checks and do not replace the saved-motion audits or alter generated trajectories.
 
 This is a data-free source snapshot of the current pipeline, not model weights.
 Components are configurable independently; evaluation reads saved output and
@@ -52,6 +60,19 @@ multiple robots. Native SMPL, generic BVH and canonical files use the same backe
 
 See [formats](docs/formats.md) for the explicit manifest and validation scope.
 
+## Package compact robot deliveries
+
+Reusable delivery tools live beside the SOMA scripts. They produce one compact robot-motion schema,
+deterministic `tar.zst` shards, resumable transfer state, checksums, and an explicit failure ledger.
+Source SOMA arrays and model intermediates are not duplicated into the robot-motion delivery.
+
+```powershell
+python toolkits/greenwich-soma-multibody/scripts/compact_robot_motion_delivery.py `
+  --source /path/to/generated --output /path/to/compact --robot h2 --workers 4
+python toolkits/greenwich-soma-multibody/scripts/package_compact_shards.py `
+  --source /path/to/compact --output /path/to/shards --prefix h2 --name h2-compact50
+```
+
 ## Evaluate saved outputs
 
 For noncompact Convert output, run:
@@ -69,6 +90,14 @@ with an exact source manifest and native viewer descriptor. It measures slip,
 penetration and disclosed source/robot pose differences. Corpus entrypoints
 `ScreenSample`, `ScreenStatistical`, `ScreenAll`, `SurfaceAudit` and
 `RescreenSurfaces` reuse saved traces and caches. See [evaluation](docs/evaluation.md).
+
+## Optional BeyondMimic QC
+
+`toolkits/greenwich-soma-multibody/quality/beyondmimic` contains the parameterized adapter used to
+test whether a saved Greenwich trajectory can be learned by a particular MjLab/BeyondMimic robot
+and controller configuration. It is intentionally secondary to conversion. Robot assets, MjLab,
+policies, motion data and videos remain external. See its README for queue, evaluation, packaging
+and interpretation boundaries.
 
 ## Review and extend
 
