@@ -44,8 +44,9 @@ def test_invalid_semantics_and_resampling_rejected(tmp_path):
 def test_convert_command_uses_shared_entrypoint(tmp_path):
     path,_=fixture(tmp_path)
     with patch('greenwich_motion_sdk.pipeline.subprocess.run') as run:
-        result=Pipeline(tmp_path/'toolkit').convert(path,tmp_path/'out',tmp_path/'robots.json',contact_iterations=100)
+        result=Pipeline(tmp_path/'toolkit').convert(path,tmp_path/'out',tmp_path/'robots.json')
     cmd=run.call_args.args[0]
     assert cmd[cmd.index('-Stage')+1]=='Convert'
     assert cmd[cmd.index('-SourceManifest')+1]==str(path.resolve())
+    assert '-ContactIterations' not in cmd
     assert '-SkipPreview' in cmd and result['results'].endswith('results.json')

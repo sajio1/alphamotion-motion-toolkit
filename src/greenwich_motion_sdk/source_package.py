@@ -17,7 +17,7 @@ CORE = ('__init__', 'motion', 'adapters', '_bvh', '_smpl_bind', 'pipeline', 'sou
         'support_geometry', 'native_projection', 'corpus_screen',
         'corpus_support', 'support_sweep', 'sampling_statistics', 'surface_audit',
         'render_review', 'card_gallery', 'review_sampling', 'review_sources',
-        'preview_candidates', 'source_package')
+        'preview_candidates', 'source_package', 'body_coordination')
 SCRIPTS = ('run_soma_locomotion.py', 'soma_contact_refine.py',
            'audit_transfer_accuracy.py', 'audit_soma_contact.py',
            'audit_soma_foot_phases.py', 'audit_ground_error.py',
@@ -57,7 +57,7 @@ def function_subset(path, names, header):
 def build(sdk_root, runtime, output):
     sdk_root,runtime,output=map(lambda p:Path(p).resolve(),(sdk_root,runtime,output))
     if output.exists() and any(output.iterdir()):raise ValueError('Use a new, empty staging directory; existing files are never deleted')
-    output.mkdir(parents=True,exist_ok=True); root=output/'alphamotion-motion-toolkit'; root.mkdir()
+    output.mkdir(parents=True,exist_ok=True); root=output/'alphamotion-locomotion-toolkit'; root.mkdir()
     files={}; origins={}
     def add(name,payload,source=None):
         if name in files:raise ValueError('Duplicate package file: '+name)
@@ -83,6 +83,7 @@ def build(sdk_root, runtime, output):
     for name in ('test_sdk.py','test_source_batch.py','test_physics_audit.py','test_contact_labels.py','test_surface_contacts.py','test_locomotion_source_phase.py','test_compact_soma_bundle.py'):
         copy(sdk_root/'tests'/name,'tests/'+name)
     copy(sdk_root/'tests/smoke_full_body.py','tests/smoke_full_body.py')
+    copy(sdk_root/'tests/test_staged_refiner_contract.py','tests/test_staged_refiner_contract.py')
 
     # Existing generation uses just these native geometry functions. Do not
     # distribute the unrelated sparse-manipulation server/demo package.
@@ -165,7 +166,7 @@ MUJOCO_LOG.TXT
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "alphamotion-motion-toolkit"
+name = "alphamotion-locomotion-toolkit"
 version = "0.2.0"
 description = "Modular motion adapters, native robot retargeting, contact refinement and offline evaluation"
 requires-python = ">=3.10"
@@ -224,7 +225,7 @@ No source-data license is replaced by this software bundle.
     (root/'SOURCE_MANIFEST.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     tree='\n'.join(sorted([*files,'SOURCE_MANIFEST.json']))+'\n'
     (output/'UPLOAD_PREVIEW.txt').write_text(tree,encoding='utf-8')
-    archive=output/'alphamotion-motion-toolkit-source.zip'
+    archive=output/'alphamotion-locomotion-toolkit-source.zip'
     with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED) as z:
         for path in sorted(root.rglob('*')):
             if path.is_file():z.write(path,path.relative_to(output).as_posix())
@@ -237,10 +238,15 @@ No source-data license is replaced by this software bundle.
 
 
 DOCUMENTS = {
- 'README.md': '''# AlphaMotion Motion Toolkit
+ 'README.md': '''# AlphaMotion Locomotion Toolkit
 
 Data adapters -> canonical MotionClip -> AlphaMotion model -> native joint
-projection -> support-aware contact refinement -> saved NPZ -> evaluation and review.
+projection -> 100 lower/contact/root iterations, then 100 body-relative upper-body
+iterations -> saved NPZ -> evaluation and review. This is the only supported
+conversion recipe; there is no contact-only or 120-iteration mode.
+The upper-body stage requires a valid anatomical arm mapping in the source and
+target robot; unsupported mappings fail explicitly rather than falling back to
+a lower-body-only output.
 
 Root height follows the active load-bearing endpoint family. Ordinary support
 uses feet; inverted support uses semantic hand endpoints. Fixed wrist/TCP
@@ -282,7 +288,7 @@ local archive and metadata. Dataset files are never checked into this repo.
 & toolkits/greenwich-soma-multibody/scripts/invoke.ps1 `
   -Stage Generate -Indices '1,2,3' -Robots /path/to/robots.json `
   -DatasetWorkspace /path/to/workspace -Output /path/to/results `
-  -ContactIterations 100 -SkipPreview -Compact
+  -SkipPreview -Compact
 ```
 
 Noncompact runs save each robot's `motion.npz`; compact runs save one NPZ per
@@ -293,7 +299,7 @@ multiple robots. Native SMPL, generic BVH and canonical files use the same backe
 & toolkits/greenwich-soma-multibody/scripts/invoke.ps1 `
   -Stage Convert -SourceManifest /path/to/sources.json `
   -Robots /path/to/robots.json -Output /path/to/results `
-  -ContactIterations 100 -SkipPreview
+  -SkipPreview
 ```
 
 See [formats](docs/formats.md) for the explicit manifest and validation scope.
@@ -342,7 +348,7 @@ and interpretation boundaries.
 See [robot integration](docs/robots.md), [Python API](docs/api.md),
 [architecture](docs/architecture.md) and [review](docs/review.md).
 The package does not include data, pictures, videos, weights or robot meshes.
-SOURCE_MANIFEST.json records the reviewed source snapshot and file hashes.
+SOURCE_MANIFEST.json records the fresh reviewed source snapshot and file hashes.
 ''',
  'docs/architecture.md': '''# Module boundaries
 
@@ -498,13 +504,12 @@ from greenwich_motion_sdk import Pipeline, RunRequest, load_motion
 pipeline = Pipeline(Path("toolkits/greenwich-soma-multibody"))
 request = RunRequest(indices=(1, 2), output=Path("/path/to/results"),
                      robots=Path("/path/to/robots.json"),
-                     representation="soma77", stage="Generate",
-                     contact_iterations=100)
+                     representation="soma77", stage="Generate")
 result = pipeline.run(request)
 
 # Explicit native SMPL / generic BVH / SOMA / canonical full-body sources:
 result = pipeline.convert("/path/to/sources.json", "/path/to/results",
-                          "/path/to/robots.json", contact_iterations=100)
+                          "/path/to/robots.json")
 
 # In a configured model/geometry environment, rescreen without inference:
 from greenwich_motion_sdk.evaluation import evaluate_outputs

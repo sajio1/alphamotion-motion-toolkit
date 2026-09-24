@@ -1,7 +1,12 @@
-# AlphaMotion Motion Toolkit
+# AlphaMotion Locomotion Toolkit
 
 Data adapters -> canonical MotionClip -> AlphaMotion model -> native joint
-projection -> support-aware contact refinement -> saved NPZ -> evaluation and review.
+projection -> **100 lower/contact/root iterations, then 100 body-relative upper-body iterations**
+-> saved NPZ -> evaluation and review. This staged sequence is the only
+supported conversion recipe; there is no contact-only or 120-iteration mode.
+The upper-body stage requires a valid anatomical arm mapping in the source and
+target robot; unsupported mappings fail explicitly rather than falling back to
+a lower-body-only output.
 
 The root-height refinement follows the active load-bearing endpoint family:
 feet for ordinary support and semantic hand endpoints for inverted support.
@@ -44,7 +49,7 @@ local archive and metadata. Dataset files are never checked into this repo.
 & toolkits/greenwich-soma-multibody/scripts/invoke.ps1 `
   -Stage Generate -Indices '1,2,3' -Robots /path/to/robots.json `
   -DatasetWorkspace /path/to/workspace -Output /path/to/results `
-  -ContactIterations 100 -SkipPreview -Compact
+  -SkipPreview -Compact
 ```
 
 Noncompact runs save each robot's `motion.npz`; compact runs save one NPZ per
@@ -55,7 +60,7 @@ multiple robots. Native SMPL, generic BVH and canonical files use the same backe
 & toolkits/greenwich-soma-multibody/scripts/invoke.ps1 `
   -Stage Convert -SourceManifest /path/to/sources.json `
   -Robots /path/to/robots.json -Output /path/to/results `
-  -ContactIterations 100 -SkipPreview
+  -SkipPreview
 ```
 
 See [formats](docs/formats.md) for the explicit manifest and validation scope.
@@ -104,4 +109,6 @@ and interpretation boundaries.
 See [robot integration](docs/robots.md), [Python API](docs/api.md),
 [architecture](docs/architecture.md) and [review](docs/review.md).
 The package does not include data, pictures, videos, weights or robot meshes.
-SOURCE_MANIFEST.json records the reviewed source snapshot and file hashes.
+SOURCE_MANIFEST.json records the previous reviewed source-package snapshot; it
+is not a checksum manifest for this evolving checkout. Running PackageSource
+generates a fresh manifest and archive for the current allowlisted code.

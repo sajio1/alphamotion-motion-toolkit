@@ -89,7 +89,6 @@ def main():
                    help="Shared AlphaMotion semantic cache; defaults to OUTPUT/cache")
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--fps", type=float, default=30)
-    p.add_argument("--contact-iterations", type=int, default=500)
     p.add_argument("--contact-config", type=Path)
     p.add_argument("--minimum-free-gb", type=float, default=20)
     p.add_argument("--shard-count", type=int, default=1)
@@ -115,7 +114,8 @@ def main():
         "global_selected_rows": global_selected_count, "selected_rows": len(rows),
         "shard_count": a.shard_count, "shard_index": a.shard_index,
         "robot_count": robot_count,
-        "fps": a.fps, "contact_iterations": a.contact_iterations,
+        "fps": a.fps, "contact_iterations": 100,
+        "upper_body_iterations": 100,
         "contact_config": json.loads(a.contact_config.read_text(encoding="utf-8-sig")) if a.contact_config else None,
         "ground_filter_regex": GROUND_PATTERN.pattern,
         "compact_npz": "q float32 + root rot6d float32 + root XYZ float32 + contacts; FK reconstructable",
@@ -163,7 +163,7 @@ def main():
                 str(a.toolkit / "scripts" / "invoke.ps1"), "-Stage", "Generate",
                 "-Indices", indices, "-DatasetWorkspace", str(stage), "-Robots", str(a.robots),
                 "-Output", str(shard), "-Fps", str(a.fps), "-MaxSeconds", "3600",
-                "-ContactIterations", str(a.contact_iterations), "-SkipPreview", "-Compact",
+                "-SkipPreview", "-Compact",
                 "-SkipSummary", "-Cache", str(a.cache)]
             if a.contact_config:command.extend(["-ContactConfig", str(a.contact_config)])
         else:
@@ -172,7 +172,7 @@ def main():
             command = [str(a.python),str(a.toolkit/'scripts'/'run_soma_locomotion.py'),
                 '--repo',str(a.repo),'--pipeline',str(a.pipeline),'--dataset-workspace',str(stage),
                 '--robots',str(a.robots),'--output',str(shard),'--indices',indices,'--fps',str(a.fps),
-                '--max-seconds','3600','--contact-iters',str(a.contact_iterations),'--ffmpeg',a.ffmpeg,
+                '--max-seconds','3600','--ffmpeg',a.ffmpeg,
                 '--input-representation','soma77','--skip-preview','--compact','--cache',str(a.cache)]
             if a.contact_config:command.extend(['--contact-config',str(a.contact_config)])
         with (a.output / "worker.log").open("a", encoding="utf-8") as log:

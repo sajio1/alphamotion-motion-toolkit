@@ -7,7 +7,7 @@ import time
 import numpy as np
 
 
-def refine(q, root, root_R, spec, dof, rest, sole, support, fps, iterations=300, source_clearance=None, config=None, flat_support=None, coordination=None, support_surface=None, support_mask=None):
+def refine(q, root, root_R, spec, dof, rest, sole, support, fps, iterations=100, source_clearance=None, config=None, flat_support=None, coordination=None, support_surface=None, support_mask=None):
     import torch
     from scipy.spatial import ConvexHull
     from scipy.ndimage import gaussian_filter1d

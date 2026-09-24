@@ -14,7 +14,6 @@ param(
     [string]$ContactConfig,
     [ValidateSet('soma77','smpl22-derived')]
     [string]$InputRepresentation = 'soma77',
-    [int]$ContactIterations = 500,
     [switch]$SkipPreview,
     [switch]$Compact,
     [switch]$SkipSummary,
@@ -96,7 +95,7 @@ if ($Stage -eq 'Convert') {
     if (-not $SourceManifest -or -not $Robots) { throw 'Convert requires SourceManifest and a robot roster' }
     if (-not $ContactConfig) { $ContactConfig=Join-Path $toolkit 'config/contact.default.json' }
     $env:PYTHONPATH=Join-Path (Split-Path (Split-Path $toolkit -Parent) -Parent) 'src'
-    $convertArgs=@((Join-Path $PSScriptRoot 'run_soma_locomotion.py'),'--source-manifest',$SourceManifest,'--repo',$paths.repo,'--pipeline',$paths.pipeline,'--robots',$Robots,'--output',$Output,'--fps',$Fps,'--max-seconds',$MaxSeconds,'--contact-iters',$ContactIterations,'--contact-config',$ContactConfig,'--ffmpeg',$paths.ffmpeg)
+    $convertArgs=@((Join-Path $PSScriptRoot 'run_soma_locomotion.py'),'--source-manifest',$SourceManifest,'--repo',$paths.repo,'--pipeline',$paths.pipeline,'--robots',$Robots,'--output',$Output,'--fps',$Fps,'--max-seconds',$MaxSeconds,'--contact-config',$ContactConfig,'--ffmpeg',$paths.ffmpeg)
     if ($SkipPreview) { $convertArgs+='--skip-preview' }
     if ($Compact) { $convertArgs+='--compact' }
     if ($Cache) { $convertArgs+=@('--cache',$Cache) }
@@ -242,7 +241,7 @@ if ($Stage -in @('All','Generate')) {
         '--repo',$paths.repo,'--pipeline',$paths.pipeline,
         '--dataset-workspace',$DatasetWorkspace,'--robots',$Robots,
         '--output',$resultRoot,'--indices',$Indices,'--fps',$Fps,
-        '--max-seconds',$MaxSeconds,'--contact-iters',$ContactIterations,
+        '--max-seconds',$MaxSeconds,
         '--contact-config',$ContactConfig,'--ffmpeg',$paths.ffmpeg,'--input-representation',$InputRepresentation
     )
     if ($SkipPreview) { $generationArgs += '--skip-preview' }

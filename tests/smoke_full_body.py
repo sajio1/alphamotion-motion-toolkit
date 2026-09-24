@@ -15,7 +15,7 @@ from greenwich_motion_sdk._bvh import load_bvh
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('source','bind','toolkit','robots','output'):p.add_argument('--'+k,type=Path,required=True)
-    p.add_argument('--seconds',type=float,default=2.);p.add_argument('--iterations',type=int,default=100)
+    p.add_argument('--seconds',type=float,default=2.)
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     clip=load_motion(a.source,format='soma',bind_path=a.bind);bind=load_bvh(a.bind)
     names=SMPL_TO_SOMA;ids=[clip.names.index(n) for n in names]
@@ -42,7 +42,7 @@ def main():
             'foot_pairs':[['LeftFoot','LeftToeBase'],['RightFoot','RightToeBase']],
             'foot_landmark_height_cm':[float(bp[[7,10],1].min()),float(bp[[8,11],1].min())]}
     manifest=a.output/'sources.json';manifest.write_text(json.dumps({'schema':'alphamotion.sources.v1','sources':[source]},indent=2),encoding='utf-8')
-    print(Pipeline(a.toolkit).convert(manifest,a.output/'results',a.robots,max_seconds=a.seconds,contact_iterations=a.iterations))
+    print(Pipeline(a.toolkit).convert(manifest,a.output/'results',a.robots,max_seconds=a.seconds))
 
 
 if __name__=='__main__':main()

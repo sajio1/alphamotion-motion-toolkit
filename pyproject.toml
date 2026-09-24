@@ -2,9 +2,9 @@
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "alphamotion-motion-toolkit"
+name = "alphamotion-locomotion-toolkit"
 version = "0.2.0"
-description = "Modular motion adapters, native robot retargeting, contact refinement and offline evaluation"
+description = "AlphaMotion full-body conversion with fixed staged 100+100 refinement and offline evaluation"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.10"]
 [project.optional-dependencies]

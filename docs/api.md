@@ -7,13 +7,12 @@ from greenwich_motion_sdk import Pipeline, RunRequest, load_motion
 pipeline = Pipeline(Path("toolkits/greenwich-soma-multibody"))
 request = RunRequest(indices=(1, 2), output=Path("/path/to/results"),
                      robots=Path("/path/to/robots.json"),
-                     representation="soma77", stage="Generate",
-                     contact_iterations=100)
+                     representation="soma77", stage="Generate")
 result = pipeline.run(request)
 
 # Explicit native SMPL / generic BVH / SOMA / canonical full-body sources:
 result = pipeline.convert("/path/to/sources.json", "/path/to/results",
-                          "/path/to/robots.json", contact_iterations=100)
+                          "/path/to/robots.json")
 
 # In a configured model/geometry environment, rescreen without inference:
 from greenwich_motion_sdk.evaluation import evaluate_outputs

@@ -6,7 +6,7 @@
 | Robot interface | roster + AlphaMotion descriptor builder | normalized vendor MJCF/URDF import |
 | Model | externally installed AlphaMotion | checkpoint selected in backend |
 | Realization | native joint projection | target axes, rest frames and limits |
-| Refinement | soma_contact_refine.py | shared foot/hand support constraints, contact/flight weights and iteration budget |
+| Refinement | soma_contact_refine.py, body_coordination.py | fixed 100 lower/contact/root iterations followed by 100 body-relative upper-body iterations; shared support weights remain configurable |
 | Evaluation | locomotion_audit, fixed_support, surface_audit, physics_audit | thresholds and saved caches |
 | Delivery | compact_robot_motion_delivery, package_compact_shards | robot schema, shard size and destination |
 | Optional controller QC | quality/beyondmimic | MjLab robot/controller/training configuration |
@@ -17,7 +17,7 @@ a small compatibility namespace `greenwich_umi_proof`; it is not the unrelated
 UMI/EGO server. runtime/scripts contains only extracted camera/encoder helpers.
 
 All full-body source loaders share MotionClip and the same model, projection and
-contact refiner. Root height is projected from the active support family rather
+two-stage refiner. Root height is projected from the active support family rather
 than always from the feet; fixed hand TCPs are valid semantic support endpoints
 when a robot has no hand mesh. Indexed SOMA batches use Pipeline.run; explicit file manifests
 use Pipeline.convert. evaluation.evaluate_outputs reuses the native sole screen.

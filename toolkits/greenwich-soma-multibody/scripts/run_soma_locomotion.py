@@ -17,14 +17,15 @@ def main():
     p.add_argument('--run-dir',type=Path,help='External checkpoint override for selected v2 model')
     p.add_argument('--output',type=Path,required=True);p.add_argument('--indices',default='1,7,24,36,37,46,55,67,96,99')
     p.add_argument('--limit',type=int);p.add_argument('--fps',type=float,default=30);p.add_argument('--max-seconds',type=float,default=15)
-    p.add_argument('--contact-iters',type=int,default=500)
     p.add_argument('--input-representation',choices=['soma77','smpl22-derived'],default='soma77')
     p.add_argument('--contact-config',type=Path,help='JSON overrides for shared contact/flight weights and phase margins')
-    p.add_argument('--coordination-config',type=Path,help='Opt-in body-relative SOMA hand/trunk refinement profile')
     p.add_argument('--skip-preview',action='store_true',help='Do not render per-robot MP4 previews')
     p.add_argument('--compact',action='store_true',help='Save one reconstruction-complete NPZ bundle per source motion')
     p.add_argument('--cache',type=Path,help='Shared AlphaMotion cache for resumable bulk jobs')
     p.add_argument('--chunk',type=int,default=32);p.add_argument('--ffmpeg',required=True);a=p.parse_args()
+    # The released SDK has one fixed staged refiner. Neither stage accepts a
+    # per-robot or per-motion iteration override.
+    a.contact_iters=100
     contact_config=json.loads(a.contact_config.read_text()) if a.contact_config else {}
     projection_geometry_strength=contact_config.pop('projection_geometry_weight',0.)
     projection_method=contact_config.pop('projection_method','global')
@@ -193,44 +194,20 @@ def main():
             rawpos=fk_pos(raw.detach().cpu().numpy(),spec)+root_target[:,None]
             rawsole=sole.sample(rawpos,c.rot6d_to_matrix(raw).detach().cpu().numpy())
             raw_penetration=float(max(np.maximum(-v.lowest_y_cm,0).max() for v in rawsole.values()))
-            refinement=None;coordination=None;joint_coordination=None
-            profile=json.loads(a.coordination_config.read_text(encoding='utf-8-sig')) if a.coordination_config else {}
-            if profile and (profile.get('arm_target_mode')!='body_coordination' or set(profile)-{'arm_target_mode','direction_iterations','optimize_trunk','solver_mode','joint_reference'}):
-                raise ValueError('Generation requires a supported body_coordination profile')
-            mode=profile.get('solver_mode','serial')
-            if mode not in ('serial','partitioned_shared_fk'):raise ValueError('Unknown coordination solver mode')
-            if mode=='partitioned_shared_fk':
-                if not a.contact_iters:raise ValueError('Joint experiment needs contact iterations')
-                from greenwich_motion_sdk.body_coordination import refine_coordination
-                joint_coordination=refine_coordination(source_p,b['names'],q.detach(),rot.detach(),spec,dt,rs,
-                    key_joints(spec)[0][2:4],key_joints(spec)[0][4:6],fps=a.fps,iterations=a.contact_iters,
-                    palm_frames=robot.get('palm_frames'),optimize_trunk=profile.get('optimize_trunk',False),prepare_only=True)
-                reference_mode=profile.get('joint_reference','initial_projection')
-                if reference_mode not in ('initial_projection','contact_detached'):raise ValueError('Unknown joint arm reference')
-                joint_coordination.follow_contact_reference=reference_mode=='contact_detached'
-            if a.contact_iters:
-                q,rot,world_t,root_target,refinement=refine(q,root_target,rr,spec,dt,rs,sole,refine_foot_contact,a.fps,a.contact_iters,source_clearance=source_clearance,config=contact_config,flat_support=flat_support,coordination=joint_coordination,support_surface=support_surface,support_mask=source_support)
-                world=world_t.detach().cpu().numpy()
-            if joint_coordination is not None:
-                coordination={'solver_mode':mode,'iterations':a.contact_iters,'solve_seconds':0.,
-                    'joint_reference':profile.get('joint_reference','initial_projection'),
-                    'timing_scope':'included in contact_refinement.seconds; do not add twice',
-                    'before_terms':joint_coordination.before_terms,
-                    'after_terms':[float(t.detach()) for t in joint_coordination.terms(q)],
-                    'anatomical_audit_after':joint_coordination.terms(q,True),
-                    'optimize_trunk':False,'gradient_partition':'arm loss updates arm variables only',
-                    'shared_fk':True,'visual_review':'pending','physical_validation':'not performed'}
-            if a.coordination_config and mode=='serial':
-                from greenwich_motion_sdk.body_coordination import refine_coordination
-                profile=json.loads(a.coordination_config.read_text(encoding='utf-8-sig'))
-                if profile.get('arm_target_mode')!='body_coordination' or set(profile)-{'arm_target_mode','direction_iterations','optimize_trunk','solver_mode'}:
-                    raise ValueError('Generation requires an explicit body_coordination profile')
-                q,_,coordination=refine_coordination(source_p,b['names'],q.detach(),rot.detach(),spec,dt,rs,
-                    key_joints(spec)[0][2:4],key_joints(spec)[0][4:6],fps=a.fps,
-                    iterations=int(profile.get('direction_iterations',100)),palm_frames=robot.get('palm_frames'),
-                    optimize_trunk=profile.get('optimize_trunk',False))
-                rot,pos=c.fk_from_angles(q,spec,dt,rest=rs,root_R=rr)
-                world=pos.detach().cpu().numpy()+root_target[:,None]
+            q,rot,world_t,root_target,refinement=refine(
+                q,root_target,rr,spec,dt,rs,sole,refine_foot_contact,a.fps,100,
+                source_clearance=source_clearance,config=contact_config,
+                flat_support=flat_support,support_surface=support_surface,
+                support_mask=source_support)
+            world=world_t.detach().cpu().numpy()
+            from greenwich_motion_sdk.body_coordination import refine_coordination
+            q,_,coordination=refine_coordination(
+                source_p,b['names'],q.detach(),rot.detach(),spec,dt,rs,
+                key_joints(spec)[0][2:4],key_joints(spec)[0][4:6],fps=a.fps,
+                iterations=100,palm_frames=robot.get('palm_frames'),
+                optimize_trunk=False)
+            rot,pos=c.fk_from_angles(q,spec,dt,rest=rs,root_R=rr)
+            world=pos.detach().cpu().numpy()+root_target[:,None]
             rotation=rot.detach().cpu().numpy();samples=sole.sample(world,rotation)
             heights=np.stack([v.lowest_y_cm for v in samples.values()],1)
             support_samples=support_surface.sample(world,rotation)
